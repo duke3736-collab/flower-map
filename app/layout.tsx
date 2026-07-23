@@ -14,6 +14,9 @@ export const metadata: Metadata = {
     locale: "ko_KR",
     type: "website",
   },
+  verification: {
+    google: "M2v9DVUow4HYMRiyu346mcAkEvvWwMpq51dPk0upQbc",
+  },
 };
 
 export const viewport: Viewport = {
