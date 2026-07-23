@@ -37,9 +37,9 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     badge: "PHOTO",
     badgeBg: "bg-violet-500",
     title: "인생샷 필수! 꽃구경 삼각대·셀카봉·미니 카메라 추천",
-    linkText: "포토 용품 보러가기 →",
+    linkText: "포토/카메라 용품 보러가기 →",
     imageUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/fCIFqWgDee"
+    link: "https://link.coupang.com/a/fCKu1sevv2"
   },
   {
     id: 4,
