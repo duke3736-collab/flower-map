@@ -303,7 +303,7 @@ export default function FlowerMapClient() {
           <div className="px-5 py-4 shrink-0" style={{background:"linear-gradient(135deg, #FFF0F7, #FDF2F8)", borderBottom:"1.5px solid #FBCFE8"}}>
             <div className="flex items-center gap-2 mb-4">
               <span className="font-black text-rose-500 text-lg">📍 봄꽃 명소 탐색</span>
-              <span className="ml-auto text-xs font-black text-rose-400 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">전국 60+ 명소</span>
+              <span className="ml-auto text-xs font-black text-rose-500 bg-rose-50 border border-rose-200 px-2.5 py-0.5 rounded-full">전국 100+ 명소</span>
             </div>
 
             {/* 검색바 */}
