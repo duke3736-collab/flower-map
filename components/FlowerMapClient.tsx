@@ -25,6 +25,7 @@ export default function FlowerMapClient() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
+  const myLocationMarkerRef = useRef<any>(null);
 
   const [mapLoaded, setMapLoaded] = useState(false);
   const [mapLoadError, setMapLoadError] = useState(false);
@@ -69,17 +70,45 @@ export default function FlowerMapClient() {
     if (mapRef.current) mapRef.current.setLevel(mapRef.current.getLevel() + 1, { animate: true });
   };
   const handleMyLocation = () => {
-    if (!navigator.geolocation || !mapRef.current) {
-      alert("위치 정보를 지원하지 않는 브라우저입니다.");
+    if (!navigator.geolocation || !mapRef.current || !window.kakao?.maps) {
+      alert("위치 정보를 지원하지 않는 브라우저이거나 지도가 준비되지 않았습니다.");
       return;
     }
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        const moveLatLng = new window.kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const moveLatLng = new window.kakao.maps.LatLng(lat, lng);
         mapRef.current.panTo(moveLatLng);
         mapRef.current.setLevel(5);
+
+        // 이전 내위치 마커 제거
+        if (myLocationMarkerRef.current) {
+          myLocationMarkerRef.current.setMap(null);
+        }
+
+        // 내위치 커스텀 오버레이 생성
+        const myLocContent = document.createElement("div");
+        myLocContent.innerHTML = `
+          <div style="position:relative;display:flex;align-items:center;justify-content:center;">
+            <div style="position:absolute;width:38px;height:38px;border-radius:50%;background:rgba(37,99,235,0.3);animation:ping 1.5s cubic-bezier(0,0,0.2,1) infinite;"></div>
+            <div style="position:relative;width:26px;height:26px;border-radius:50%;background:#2563EB;border:3px solid white;box-shadow:0 4px 14px rgba(37,99,235,0.5);display:flex;align-items:center;justify-content:center;color:white;font-size:13px;font-weight:900;">🎯</div>
+          </div>`;
+        
+        const overlay = new window.kakao.maps.CustomOverlay({
+          position: moveLatLng,
+          content: myLocContent,
+          yAnchor: 0.5,
+          xAnchor: 0.5,
+          zIndex: 999,
+        });
+        overlay.setMap(mapRef.current);
+        myLocationMarkerRef.current = overlay;
       },
-      () => alert("현재 위치를 불러올 수 없습니다.")
+      (err) => {
+        console.error("위치 가져오기 오류:", err);
+        alert("현재 위치 권한을 허용해 주시거나 GPS 상태를 확인해 주세요.");
+      }
     );
   };
 
@@ -307,7 +336,7 @@ export default function FlowerMapClient() {
           </div>
 
           {/* 명소 목록 */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-3 py-3 space-y-2 bg-slate-50">
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pt-3 pb-24 space-y-2 bg-slate-50">
             {filteredSpots.length === 0 ? (
               <div className="text-center py-16">
                 <div className="text-5xl mb-3">🔍</div>
