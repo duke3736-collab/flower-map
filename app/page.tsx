@@ -86,7 +86,7 @@ export default function HomePage() {
           <div className="flex flex-wrap justify-center gap-6 mt-12 pt-8 border-t border-pink-100">
             {[
               { num: "18종", label: "봄꽃 종류", emoji: "🌸" },
-              { num: "30+", label: "전국 명소", emoji: "📍" },
+              { num: "100+", label: "전국 명소", emoji: "📍" },
               { num: "2~7월", label: "시즌 안내", emoji: "📅" },
               { num: "무료", label: "이용 가능", emoji: "💝" },
             ].map((s) => (
