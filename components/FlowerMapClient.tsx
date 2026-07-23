@@ -56,9 +56,8 @@ export default function FlowerMapClient() {
   }, []);
 
   const initMap = () => {
-    if (!window.kakao?.maps || mapLoaded) return;
-    window.kakao.maps.load(() => {
-      if (!mapContainerRef.current) return;
+    if (!mapContainerRef.current || !window.kakao?.maps) return;
+    try {
       const map = new window.kakao.maps.Map(mapContainerRef.current, {
         center: new window.kakao.maps.LatLng(36.5, 127.8),
         level: 10,
@@ -66,16 +65,56 @@ export default function FlowerMapClient() {
       mapRef.current = map;
       window.addEventListener("resize", () => mapRef.current?.relayout());
       setMapLoaded(true);
-    });
+      setMapLoadError(false);
+    } catch (e) {
+      console.error("Kakao Map init error:", e);
+      setMapLoadError(true);
+    }
   };
 
   useEffect(() => {
     if (mapLoaded) return;
-    const timeout = setTimeout(() => { if (!mapLoaded) setMapLoadError(true); }, 6000);
-    const interval = setInterval(() => {
-      if (window.kakao?.maps) { clearInterval(interval); clearTimeout(timeout); initMap(); }
-    }, 300);
-    return () => { clearInterval(interval); clearTimeout(timeout); };
+
+    const loadKakaoMap = () => {
+      if (window.kakao && window.kakao.maps) {
+        window.kakao.maps.load(() => initMap());
+        return;
+      }
+
+      const existingScript = document.getElementById("kakao-map-script");
+      if (!existingScript) {
+        const script = document.createElement("script");
+        script.id = "kakao-map-script";
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`;
+        script.async = true;
+        script.onload = () => {
+          if (window.kakao && window.kakao.maps) {
+            window.kakao.maps.load(() => initMap());
+          }
+        };
+        script.onerror = () => {
+          setMapLoadError(true);
+        };
+        document.head.appendChild(script);
+      } else {
+        const interval = setInterval(() => {
+          if (window.kakao && window.kakao.maps) {
+            clearInterval(interval);
+            window.kakao.maps.load(() => initMap());
+          }
+        }, 200);
+        return () => clearInterval(interval);
+      }
+    };
+
+    loadKakaoMap();
+    const timeout = setTimeout(() => {
+      if (!mapLoaded && !window.kakao?.maps) {
+        setMapLoadError(true);
+      }
+    }, 5000);
+
+    return () => clearTimeout(timeout);
   }, [mapLoaded]);
 
   useEffect(() => {
@@ -137,12 +176,6 @@ export default function FlowerMapClient() {
 
   return (
     <>
-      <Script
-        src={`//dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_APP_KEY}&autoload=false`}
-        strategy="afterInteractive"
-        onLoad={initMap}
-      />
-
       {/* ====== 데스크탑 ====== */}
       <div className="hidden md:flex map-page-root">
         {/* 왼쪽 사이드 패널 */}
