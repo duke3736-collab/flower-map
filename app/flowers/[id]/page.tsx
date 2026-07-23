@@ -16,9 +16,22 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const flower = FLOWERS.find((f) => f.id === id);
   if (!flower) return { title: "꽃 정보를 찾을 수 없습니다 | 꽃맵" };
 
+  const spotKeywords = flower.topSpots.join(", ");
+  const title = `${flower.name}꽃 개화시기 2026 – ${flower.bloomPeak} 절정 | 꽃맵`;
+  const description = `2026 ${flower.name}꽃 개화시기는 ${flower.bloomStart} 시작, ${flower.bloomPeak} 절정, ${flower.bloomEnd} 마무리입니다. ${flower.name}꽃 명소: ${spotKeywords}. ${flower.description.slice(0, 60)}`;
+
   return {
-    title: `${flower.name} 개화 시기 및 전국 명소 | 2026 꽃맵`,
-    description: `${flower.name}의 2026년 개화 시기(${flower.bloomStart})와 전국 명소를 지도로 확인하세요. ${flower.description.slice(0, 80)}...`,
+    title,
+    description,
+    keywords: `${flower.name}꽃 개화시기, ${flower.name}꽃 2026, ${flower.name}꽃 명소, ${flower.name}꽃 축제, ${flower.name}꽃 피는 시기, ${flower.name} 개화 시기, ${flower.bloomPeak} ${flower.name}꽃, 봄꽃 여행, ${spotKeywords}`,
+    openGraph: {
+      title,
+      description,
+      url: `https://flower.weknews.com/flowers/${id}`,
+      siteName: "꽃맵 (Flower Map)",
+      locale: "ko_KR",
+      type: "article",
+    },
   };
 }
 

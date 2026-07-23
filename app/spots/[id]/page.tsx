@@ -17,10 +17,26 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const spot = SPOTS.find((s) => s.id.toString() === id);
   if (!spot) return { title: "명소 정보를 찾을 수 없습니다 | 꽃맵" };
 
+  const flowerKeywords = spot.flowerIds.map((fid) => {
+    const f = FLOWERS.find((fl) => fl.id === fid);
+    return f ? `${f.name}꽃 개화시기` : "";
+  }).filter(Boolean).join(", ");
+
+  const title = `${spot.name} 2026 봄꽃 개화 시기 & 주차 꿀팁 | 꽃맵`;
+  const description = `${spot.address}에 위치한 ${spot.name} 2026 봄꽃 명소 정보. ${flowerKeywords}. 주차: ${spot.parking} | ${spot.tip || spot.description.slice(0, 60)}`;
+
   return {
-    title: `${spot.name} 2026 봄꽃 개화 시기 및 주차 정보 | 꽃맵`,
-    description: `${spot.address}에 위치한 ${spot.name}의 2026년 봄꽃 개화 시기, 주차장 정보, 꿀팁을 확인하세요. ${spot.description}`,
-    keywords: `${spot.name}, ${spot.name} 개화시기, ${spot.region} 봄꽃, ${spot.tags.join(", ")}`,
+    title,
+    description,
+    keywords: `${spot.name}, ${spot.name} 개화시기, ${spot.name} 봄꽃, ${spot.region} 봄꽃 명소, ${spot.region} 꽃구경, ${flowerKeywords}, ${spot.tags.join(", ")}, 2026 봄꽃 여행`,
+    openGraph: {
+      title,
+      description,
+      url: `https://flower.weknews.com/spots/${id}`,
+      siteName: "꽃맵 (Flower Map)",
+      locale: "ko_KR",
+      type: "article",
+    },
   };
 }
 
