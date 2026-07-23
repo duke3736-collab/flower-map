@@ -43,12 +43,12 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
   },
   {
     id: 4,
-    badge: "HEALTH",
+    badge: "SUNCARE",
     badgeBg: "bg-emerald-500",
-    title: "봄 알레르기 대비! 선크림·마스크·항히스타민제 특가",
-    linkText: "봄철 건강용품 보러가기 →",
+    title: "봄철 자외선·알레르기 대비! 자외선 차단 선크림·마스크 특가",
+    linkText: "봄철 선크림/자외선 차단 특가전 →",
     imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/fCIFqWgDee"
+    link: "https://link.coupang.com/a/fCKKA1vAjc"
   },
   {
     id: 5,
