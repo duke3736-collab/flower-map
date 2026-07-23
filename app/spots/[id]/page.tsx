@@ -12,8 +12,9 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }) {
-  const spot = SPOTS.find((s) => s.id.toString() === params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const spot = SPOTS.find((s) => s.id.toString() === id);
   if (!spot) return { title: "명소 정보를 찾을 수 없습니다 | 꽃맵" };
 
   return {
@@ -23,8 +24,9 @@ export function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default function SpotDetailPage({ params }: { params: { id: string } }) {
-  const spot = SPOTS.find((s) => s.id.toString() === params.id);
+export default async function SpotDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const spot = SPOTS.find((s) => s.id.toString() === id);
   
   if (!spot) {
     notFound();

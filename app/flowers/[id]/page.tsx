@@ -11,8 +11,9 @@ export function generateStaticParams() {
   }));
 }
 
-export function generateMetadata({ params }: { params: { id: string } }) {
-  const flower = FLOWERS.find((f) => f.id === params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const flower = FLOWERS.find((f) => f.id === id);
   if (!flower) return { title: "꽃 정보를 찾을 수 없습니다 | 꽃맵" };
 
   return {
@@ -21,8 +22,9 @@ export function generateMetadata({ params }: { params: { id: string } }) {
   };
 }
 
-export default function FlowerDetailPage({ params }: { params: { id: string } }) {
-  const flower = FLOWERS.find((f) => f.id === params.id);
+export default async function FlowerDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const flower = FLOWERS.find((f) => f.id === id);
   
   if (!flower) {
     notFound();
