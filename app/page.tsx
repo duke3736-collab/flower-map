@@ -216,28 +216,84 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
             {[
-              { name: "진해 군항제", emoji: "🌸", region: "경남 창원", desc: "300만 그루 벚꽃의 성지. 여좌천 로망스 다리가 필수 코스.", badge: "전국 최대", color: "from-rose-400 to-pink-500", month: "3월 말 ~ 4월 초" },
-              { name: "광양 매화마을", emoji: "🌸", region: "전남 광양", desc: "섬진강변 따라 펼쳐지는 하얀 매화 군락지의 장관.", badge: "2~3월", color: "from-white to-pink-50", textDark: true, month: "2월 하순 ~ 3월 초" },
-              { name: "황매산 철쭉제", emoji: "🌺", region: "경남 합천", desc: "산 전체를 진분홍빛으로 물들이는 전국 최대 철쭉 군락.", badge: "5월 절정", color: "from-pink-500 to-rose-600", month: "5월 초 ~ 중순" },
-              { name: "고양 꽃박람회", emoji: "🌷", region: "경기 고양", desc: "연 200만 명 방문하는 전국 최대 봄꽃 박람회.", badge: "4~5월", color: "from-red-400 to-orange-400", month: "4월 하순 ~ 5월 초" },
-              { name: "구례 산수유마을", emoji: "🌼", region: "전남 구례", desc: "온 마을이 노란빛으로 물드는 600년 전통의 산수유 마을.", badge: "3월 절정", color: "from-yellow-400 to-amber-400", month: "3월 초 ~ 하순" },
-              { name: "경주 불국사 겹벚꽃", emoji: "🌸", region: "경북 경주", desc: "'분홍 팝콘' 겹벚꽃이 유네스코 세계유산과 어우러지는 명소.", badge: "4월 하순", color: "from-fuchsia-400 to-pink-500", month: "4월 중순 ~ 5월 초" },
+              { 
+                name: "진해 군항제", 
+                emoji: "🌸", 
+                region: "경남 창원", 
+                desc: "300만 그루 벚꽃의 성지. 여좌천 로망스 다리가 필수 코스.", 
+                badge: "전국 최대", 
+                month: "3월 말 ~ 4월 초",
+                imageUrl: "https://images.unsplash.com/photo-1522383225653-ed111181a951?w=800&auto=format&fit=crop&q=80"
+              },
+              { 
+                name: "광양 매화마을", 
+                emoji: "🤍", 
+                region: "전남 광양", 
+                desc: "섬진강변 따라 펼쳐지는 하얀 매화 군락지의 장관.", 
+                badge: "2~3월", 
+                month: "2월 하순 ~ 3월 초",
+                imageUrl: "https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=800&auto=format&fit=crop&q=80"
+              },
+              { 
+                name: "황매산 철쭉제", 
+                emoji: "🌺", 
+                region: "경남 합천", 
+                desc: "산 전체를 진분홍빛으로 물들이는 전국 최대 철쭉 군락.", 
+                badge: "5월 절정", 
+                month: "5월 초 ~ 중순",
+                imageUrl: "https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?w=800&auto=format&fit=crop&q=80"
+              },
+              { 
+                name: "고양 꽃박람회", 
+                emoji: "🌷", 
+                region: "경기 고양", 
+                desc: "연 200만 명 방문하는 전국 최대 봄꽃 박람회.", 
+                badge: "4~5월", 
+                month: "4월 하순 ~ 5월 초",
+                imageUrl: "https://images.unsplash.com/photo-1520763185298-1b434c919102?w=800&auto=format&fit=crop&q=80"
+              },
+              { 
+                name: "구례 산수유마을", 
+                emoji: "🌼", 
+                region: "전남 구례", 
+                desc: "온 마을이 노란빛으로 물드는 600년 전통의 산수유 마을.", 
+                badge: "3월 절정", 
+                month: "3월 초 ~ 하순",
+                imageUrl: "https://images.unsplash.com/photo-1508672019048-805479767385?w=800&auto=format&fit=crop&q=80"
+              },
+              { 
+                name: "경주 불국사 겹벚꽃", 
+                emoji: "🌸", 
+                region: "경북 경주", 
+                desc: "'분홍 팝콘' 겹벚꽃이 유네스코 세계유산과 어우러지는 명소.", 
+                badge: "4월 하순", 
+                month: "4월 중순 ~ 5월 초",
+                imageUrl: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=800&auto=format&fit=crop&q=80"
+              },
             ].map((spot, i) => (
-              <Link key={i} href="/map" className="spring-card overflow-hidden block group">
-                <div className={`h-40 bg-gradient-to-br ${spot.color} relative flex items-end p-4`}>
-                  <div className="absolute top-4 right-4 text-4xl group-hover:scale-125 transition-transform duration-500">{spot.emoji}</div>
-                  <div>
-                    <span className={`text-[11px] font-black px-2.5 py-1 rounded-full ${spot.textDark ? "bg-rose-100 text-rose-600" : "bg-white/20 text-white"}`}>{spot.badge}</span>
-                  </div>
+              <Link key={i} href="/map" className="spring-card overflow-hidden block group bg-white rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-rose-300 transition-all">
+                <div className="h-44 relative overflow-hidden flex items-end p-4">
+                  <img
+                    src={spot.imageUrl}
+                    alt={spot.name}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-900/30 to-transparent"></div>
+                  <span className="relative z-10 text-[11px] font-black px-3 py-1 rounded-full bg-rose-500 text-white shadow-md">
+                    {spot.badge}
+                  </span>
+                  <span className="relative z-10 ml-auto text-2xl drop-shadow-md group-hover:scale-125 transition-transform duration-300">
+                    {spot.emoji}
+                  </span>
                 </div>
                 <div className="p-5">
                   <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="font-black text-slate-800 text-base">{spot.name}</h3>
-                    <span className="text-[11px] text-pink-400 font-bold whitespace-nowrap">{spot.month}</span>
+                    <h3 className="font-black text-slate-800 text-base group-hover:text-rose-500 transition-colors">{spot.name}</h3>
+                    <span className="text-[11px] text-pink-500 font-black whitespace-nowrap bg-rose-50 px-2 py-0.5 rounded-full">{spot.month}</span>
                   </div>
-                  <p className="text-xs text-slate-500 mb-1">📍 {spot.region}</p>
+                  <p className="text-xs text-slate-400 font-bold mb-2">📍 {spot.region}</p>
                   <p className="text-sm text-slate-600 leading-relaxed">{spot.desc}</p>
-                  <div className="mt-4 flex items-center gap-1 text-rose-400 text-sm font-bold group-hover:gap-2 transition-all">
+                  <div className="mt-4 flex items-center gap-1 text-rose-500 text-sm font-black group-hover:gap-2 transition-all">
                     <span>지도에서 보기</span>
                     <span>→</span>
                   </div>
