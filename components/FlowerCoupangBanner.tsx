@@ -21,7 +21,7 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     title: "봄 나들이 필수템! 감성 피크닉 매트·도시락·보냉백 특가",
     linkText: "피크닉 용품 최저가 보러가기 →",
     imageUrl: "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/여기에_피크닉용품_링크를_넣어주세요" // 실제 봄 피크닉 링크로 교체 필요
+    link: "https://link.coupang.com/a/fCIFqWgDee"
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     title: "벚꽃 나들이 패션! 봄 원피스·가디건·모자 트렌드 모음",
     linkText: "봄 패션 기획전 보러가기 →",
     imageUrl: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/여기에_봄패션_링크를_넣어주세요"
+    link: "https://link.coupang.com/a/fCIFqWgDee"
   },
   {
     id: 3,
@@ -39,7 +39,7 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     title: "인생샷 필수! 꽃구경 삼각대·셀카봉·미니 카메라 추천",
     linkText: "포토 용품 보러가기 →",
     imageUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/여기에_카메라용품_링크를_넣어주세요"
+    link: "https://link.coupang.com/a/fCIFqWgDee"
   },
   {
     id: 4,
@@ -48,7 +48,7 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     title: "봄 알레르기 대비! 선크림·마스크·항히스타민제 특가",
     linkText: "봄철 건강용품 보러가기 →",
     imageUrl: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/여기에_건강용품_링크를_넣어주세요"
+    link: "https://link.coupang.com/a/fCIFqWgDee"
   },
   {
     id: 5,
@@ -57,7 +57,7 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     title: "벚꽃 드라이브 준비! 차량용 방향제·선바이저·트렁크 정리함",
     linkText: "드라이브 용품 보러가기 →",
     imageUrl: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/여기에_드라이브용품_링크를_넣어주세요"
+    link: "https://link.coupang.com/a/fCIFqWgDee"
   },
   {
     id: 6,
@@ -66,7 +66,7 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     title: "아이와 봄나들이! 유아 돗자리·유모차 쿠션·어린이 방수 신발",
     linkText: "키즈 나들이 용품 →",
     imageUrl: "https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/여기에_키즈용품_링크를_넣어주세요"
+    link: "https://link.coupang.com/a/fCIFqWgDee"
   },
   {
     id: 7,
@@ -75,7 +75,7 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     title: "봄꽃 캠핑 시즌! 경량 텐트·캠핑 의자·버너 세트 최저가",
     linkText: "캠핑 용품 기획전 →",
     imageUrl: "https://images.unsplash.com/photo-1478827536114-da961b7f86d2?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/여기에_캠핑용품_링크를_넣어주세요"
+    link: "https://link.coupang.com/a/fCIFqWgDee"
   },
   {
     id: 8,
@@ -84,7 +84,7 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     title: "꽃구경 도시락 용기! 인스타 감성 도시락통·밀폐 반찬통 모음",
     linkText: "도시락 용기 특가전 →",
     imageUrl: "https://images.unsplash.com/photo-1547592180-85f173990554?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/여기에_도시락용품_링크를_넣어주세요"
+    link: "https://link.coupang.com/a/fCIFqWgDee"
   }
 ];
 
