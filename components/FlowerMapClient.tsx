@@ -211,29 +211,30 @@ export default function FlowerMapClient() {
 
       const content = document.createElement("div");
       content.innerHTML = `
-        <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:translateY(-10px);transition:all 0.2s">
-          <div style="display:flex;align-items:center;gap:5px;padding:6px 14px;border-radius:50px;font-weight:900;font-size:13px;
-            box-shadow:${isActive ? "0 4px 16px rgba(236,72,153,0.4)" : "0 2px 8px rgba(0,0,0,0.12)"};
-            background:${isActive ? "linear-gradient(135deg,#EC4899,#F43F5E)" : "white"};
-            color:${isActive ? "white" : "#64748b"};
-            border:${isSelected ? "3px solid #7C3AED" : "none"};
+        <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:${isSelected ? "translateY(-15px) scale(1.18)" : "translateY(-10px)"};transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:${isSelected ? 100 : 10}">
+          <div style="display:flex;align-items:center;gap:6px;padding:${isSelected ? "8px 18px" : "6px 14px"};border-radius:50px;font-weight:900;font-size:${isSelected ? "14px" : "12px"};
+            box-shadow:${isSelected ? "0 8px 25px rgba(225,29,72,0.6)" : (isActive ? "0 4px 16px rgba(236,72,153,0.4)" : "0 2px 8px rgba(0,0,0,0.12)")};
+            background:${isSelected ? "linear-gradient(135deg,#BE123C,#E11D48)" : (isActive ? "linear-gradient(135deg,#EC4899,#F43F5E)" : "white")};
+            color:${isActive || isSelected ? "white" : "#475569"};
+            border:${isSelected ? "3px solid #FFFFFF" : "none"};
             white-space:nowrap;margin-bottom:4px;font-family:'Noto Sans KR',sans-serif;">
-            ${emoji} ${spot.name}
+            ${emoji} ${spot.name} ${isSelected ? "✨" : ""}
           </div>
-          <div style="width:10px;height:10px;border-radius:50%;
-            background:${isActive ? "#EC4899" : "#CBD5E1"};
-            border:2px solid white;
-            box-shadow:0 2px 6px rgba(0,0,0,0.15)"></div>
+          <div style="width:${isSelected ? "14px" : "10px"};height:${isSelected ? "14px" : "10px"};border-radius:50%;
+            background:${isSelected ? "#E11D48" : (isActive ? "#EC4899" : "#CBD5E1")};
+            border:2.5px solid white;
+            box-shadow:0 2px 8px rgba(0,0,0,0.25)"></div>
         </div>`;
       content.onclick = () => {
         setSelectedSpot(spot);
-        if (isMobile) setActiveTab("list");
+        if (isMobile) setActiveTab("map");
       };
 
       const overlay = new window.kakao.maps.CustomOverlay({
         position: new window.kakao.maps.LatLng(spot.lat, spot.lng),
         content,
         yAnchor: 1,
+        zIndex: isSelected ? 100 : 1,
       });
       overlay.setMap(mapRef.current);
       markersRef.current.push(overlay);
@@ -241,12 +242,16 @@ export default function FlowerMapClient() {
   }, [mapLoaded, filteredSpots, selectedSpot, isMobile]);
 
   useEffect(() => {
-    if (selectedSpot && mapRef.current) {
-      mapRef.current.panTo(new window.kakao.maps.LatLng(selectedSpot.lat, selectedSpot.lng));
-      mapRef.current.setLevel(7);
-      if (isMobile) setActiveTab("map");
+    if (selectedSpot && mapRef.current && window.kakao?.maps) {
+      const targetLatLng = new window.kakao.maps.LatLng(selectedSpot.lat, selectedSpot.lng);
+      mapRef.current.setLevel(4, { animate: { duration: 350 } });
+      mapRef.current.panTo(targetLatLng);
+
+      if (isMobile) {
+        setActiveTab("map");
+      }
     }
-  }, [selectedSpot]);
+  }, [selectedSpot, isMobile]);
 
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden bg-slate-50">
