@@ -9,7 +9,7 @@ import { SPOTS, type Spot, REGIONS } from "@/lib/spots";
 
 declare global { interface Window { kakao: any; } }
 
-const KAKAO_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_APP_KEY || "11032eefd7d0111cb94d93c0ab41eb01";
+const KAKAO_APP_KEY = process.env.NEXT_PUBLIC_KAKAO_APP_KEY || "8512613457f57dac9e1cf48483391e09";
 
 const STATUS_LABEL: Record<string, string> = {
   "없음": "미개화", "꽃봉오리": "🌱 봉오리", "개화시작": "🌸 개화 시작",
