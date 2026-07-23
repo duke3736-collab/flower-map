@@ -109,43 +109,43 @@ html, body {
 }
 
 .btn-primary {
-  background: #F472B6;
-  color: #0F172A;
+  background: #E11D48;
+  color: #FFFFFF;
   font-weight: 900;
   border-radius: 9999px;
-  border: 2.5px solid #0F172A;
-  box-shadow: 4px 4px 0px #0F172A;
-  transition: all 0.2s ease;
+  box-shadow: 0 10px 25px -5px rgba(225, 29, 72, 0.4), 0 8px 10px -6px rgba(225, 29, 72, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  border: none;
 }
 .btn-primary:hover {
-  background: #EC4899;
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px #0F172A;
+  background: #BE123C;
+  transform: translateY(-3px);
+  box-shadow: 0 20px 25px -5px rgba(225, 29, 72, 0.5), 0 8px 10px -6px rgba(225, 29, 72, 0.1);
 }
 .btn-primary:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px #0F172A;
+  transform: translateY(0);
+  box-shadow: 0 4px 6px -1px rgba(225, 29, 72, 0.3);
 }
 
 .btn-secondary {
-  background: white;
-  color: #0F172A;
+  background: #0F172A;
+  color: #FFFFFF;
   font-weight: 900;
   border-radius: 9999px;
-  border: 2.5px solid #0F172A;
-  box-shadow: 4px 4px 0px #0F172A;
-  transition: all 0.2s ease;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.4), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  border: none;
 }
 .btn-secondary:hover {
-  background: #FDF2F8;
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px #0F172A;
+  background: #1E293B;
+  transform: translateY(-3px);
+  box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.5), 0 8px 10px -6px rgba(15, 23, 42, 0.1);
 }
 .btn-secondary:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px #0F172A;
+  transform: translateY(0);
+  box-shadow: 0 4px 6px -1px rgba(15, 23, 42, 0.3);
 }
 
 /* ===== 그라데이션 텍스트 ===== */

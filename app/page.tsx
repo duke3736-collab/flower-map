@@ -100,12 +100,13 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ====== 상단 광고 ====== */}
+      {/* ====== 상단 광고 (빈 공간 문제로 임시 주석 처리) ====== 
       <div className="bg-rose-50 border-y border-rose-100">
         <div className="max-w-5xl mx-auto px-4 py-3">
           <AdBanner dataAdSlot="flower-landing-top" dataAdFormat="auto" style={{ minHeight: 60, width: "100%" }} />
         </div>
       </div>
+      */}
 
       {/* ====== 이달의 봄꽃 ====== */}
       <section className="px-4 py-14 section-pink">
