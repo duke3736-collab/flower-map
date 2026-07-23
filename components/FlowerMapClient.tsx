@@ -197,6 +197,19 @@ export default function FlowerMapClient() {
     }
   }, [activeTab, isMobile]);
 
+  const handleSelectSpot = (spot: Spot | null) => {
+    if (spot) {
+      // 선택한 명소가 현재 필터에 없다면 필터 자동 해제하여 사이드바에 반드시 노출되도록 보장
+      const inFiltered = filteredSpots.some(s => s.id === spot.id);
+      if (!inFiltered) {
+        setSearchQuery("");
+        setSelectedRegion("all");
+        setSelectedFlowerId("all");
+      }
+    }
+    setSelectedSpot(spot);
+  };
+
   // 마커 갱신
   useEffect(() => {
     if (!mapLoaded || !mapRef.current) return;
@@ -225,9 +238,13 @@ export default function FlowerMapClient() {
             border:2.5px solid white;
             box-shadow:0 2px 8px rgba(0,0,0,0.25)"></div>
         </div>`;
-      content.onclick = () => {
-        setSelectedSpot(spot);
-        if (isMobile) setActiveTab("map");
+
+      content.onclick = (e) => {
+        e.stopPropagation();
+        handleSelectSpot(spot);
+        if (isMobile) {
+          setActiveTab("list");
+        }
       };
 
       const overlay = new window.kakao.maps.CustomOverlay({
@@ -244,22 +261,20 @@ export default function FlowerMapClient() {
   const spotCardRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   useEffect(() => {
-    if (selectedSpot) {
-      if (mapRef.current && window.kakao?.maps) {
-        const targetLatLng = new window.kakao.maps.LatLng(selectedSpot.lat, selectedSpot.lng);
-        mapRef.current.setLevel(4, { animate: { duration: 350 } });
-        mapRef.current.panTo(targetLatLng);
-      }
+    if (selectedSpot && mapRef.current && window.kakao?.maps) {
+      const targetLatLng = new window.kakao.maps.LatLng(selectedSpot.lat, selectedSpot.lng);
+      mapRef.current.setLevel(4);
+      mapRef.current.panTo(targetLatLng);
 
-      // 데스크탑: 사이드바의 해당 명소 카드로 자동 부드러운 스크롤 이동
+      // 사이드바의 해당 명소 카드로 부드러운 스크롤 이동 및 열기
       setTimeout(() => {
         const el = spotCardRefs.current[selectedSpot.id];
         if (el) {
           el.scrollIntoView({ behavior: "smooth", block: "center" });
         }
-      }, 150);
+      }, 100);
     }
-  }, [selectedSpot, isMobile]);
+  }, [selectedSpot]);
 
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden bg-slate-50">
@@ -370,7 +385,7 @@ export default function FlowerMapClient() {
                 <div
                   key={spot.id}
                   ref={(el) => { spotCardRefs.current[spot.id] = el; }}
-                  onClick={() => setSelectedSpot(isSelected ? null : spot)}
+                  onClick={() => handleSelectSpot(isSelected ? null : spot)}
                   className={`bg-white rounded-2xl cursor-pointer transition-all border-2 overflow-hidden ${isSelected ? "border-rose-500 shadow-xl ring-4 ring-rose-100 scale-[1.02]" : "border-slate-100 hover:border-rose-200 hover:shadow-md"}`}
                 >
                   <div className="p-4">
@@ -541,7 +556,7 @@ export default function FlowerMapClient() {
               const isSelected = selectedSpot?.id === spot.id;
               return (
                 <div key={spot.id} ref={(el) => { spotCardRefs.current[spot.id] = el; }}>
-                  <div onClick={() => setSelectedSpot(isSelected ? null : spot)}
+                  <div onClick={() => handleSelectSpot(isSelected ? null : spot)}
                     className={`bg-white rounded-2xl cursor-pointer border-2 transition-all ${isSelected ? "border-rose-500 shadow-xl ring-4 ring-rose-100 scale-[1.01]" : "border-transparent hover:border-rose-100"}`}>
                     <div className="p-3.5 flex items-center gap-3">
                       <div className="text-2xl">{flower?.emoji || "🌸"}</div>
