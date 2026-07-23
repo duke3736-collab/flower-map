@@ -42,6 +42,24 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_MEASUREMENT_ID}');`,
           }}
         />
+        <link rel="canonical" href="https://flower.weknews.com" />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "꽃맵 (Flower Map)",
+              url: "https://flower.weknews.com",
+              description: "2026 전국 봄꽃 개화 시기, 벚꽃 명소, 드라이브 코스 정보 제공 지도",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://flower.weknews.com/?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Outfit:wght@400;700;900&display=swap" rel="stylesheet" />

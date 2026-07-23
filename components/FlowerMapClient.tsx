@@ -252,6 +252,26 @@ export default function FlowerMapClient() {
                           <span className="text-xs text-violet-600 font-black">{spot.festivalName}</span>
                         </div>
                       )}
+
+                      {/* 길찾기 버튼 */}
+                      <div className="flex gap-2 pt-1">
+                        <a
+                          href={`https://map.kakao.com/link/to/${encodeURIComponent(spot.name)},${spot.lat},${spot.lng}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 bg-yellow-400 hover:bg-yellow-500 text-slate-900 font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1 transition-colors shadow-sm"
+                        >
+                          <span>🟡</span> 카카오맵 길찾기
+                        </a>
+                        <a
+                          href={`https://map.naver.com/v5/search/${encodeURIComponent(spot.name)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs py-2 px-3 rounded-xl flex items-center justify-center gap-1 transition-colors shadow-sm"
+                        >
+                          <span>🟢</span> 네이버지도 길찾기
+                        </a>
+                      </div>
                     </div>
                   )}
                 </div>
