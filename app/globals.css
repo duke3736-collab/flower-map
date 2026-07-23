@@ -35,7 +35,13 @@ html, body {
 }
 
 /* ===== 스크롤바 ===== */
-.custom-scrollbar { scrollbar-width: thin; scrollbar-color: #FBCFE8 transparent; }
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #FBCFE8 transparent;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  overscroll-behavior-y: contain;
+}
 .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #FBCFE8; border-radius: 2px; }
@@ -219,7 +225,7 @@ html, body {
   height: 100vh;
   overflow: hidden;
   background: #FFF5FB;
-  touch-action: none;
+  touch-action: pan-y;
 }
 
 /* ===== 애니메이션 유틸 ===== */

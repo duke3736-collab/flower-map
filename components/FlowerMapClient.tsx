@@ -426,19 +426,11 @@ export default function FlowerMapClient() {
               );
             })}
 
-            {/* 하단 여유 스페이서 */}
-            <div className="h-32 shrink-0" />
-
             {/* 광고 */}
             <div className="bg-white rounded-2xl overflow-hidden border border-rose-100">
               <AdBanner dataAdSlot="flower-map-sidebar" dataAdFormat="rectangle" style={{ minHeight: 250 }} />
             </div>
-            <div className="h-16 shrink-0" />
-          </div>
-
-          {/* 하단 광고 */}
-          <div className="px-3 py-2 shrink-0 border-t-2 border-rose-50 bg-white">
-            <AdBanner dataAdSlot="flower-map-sidebar-bottom" dataAdFormat="auto" style={{ minHeight: 90 }} />
+            <div className="h-32 shrink-0" />
           </div>
         </div>
 
