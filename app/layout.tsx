@@ -34,6 +34,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="ko">
       <head>
+        <meta name="google" content="notranslate" />
         <meta name="google-site-verification" content="M2v9DVUow4HYMRiyu346mcAkEvvWwMpq51dPk0upQbc" />
         <meta name="naver-site-verification" content="eaefac08c22cc3895cbc14fdbe7908cc269698b4" />
         <Script
