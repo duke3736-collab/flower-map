@@ -55,17 +55,54 @@ export default function FlowerMapClient() {
     return () => window.removeEventListener("resize", check);
   }, []);
 
+  const fitAllBounds = () => {
+    if (!mapRef.current || !window.kakao?.maps || filteredSpots.length === 0) return;
+    const bounds = new window.kakao.maps.LatLngBounds();
+    filteredSpots.forEach(s => bounds.extend(new window.kakao.maps.LatLng(s.lat, s.lng)));
+    mapRef.current.setBounds(bounds);
+  };
+
+  const handleZoomIn = () => {
+    if (mapRef.current) mapRef.current.setLevel(mapRef.current.getLevel() - 1, { animate: true });
+  };
+  const handleZoomOut = () => {
+    if (mapRef.current) mapRef.current.setLevel(mapRef.current.getLevel() + 1, { animate: true });
+  };
+  const handleMyLocation = () => {
+    if (!navigator.geolocation || !mapRef.current) {
+      alert("위치 정보를 지원하지 않는 브라우저입니다.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const moveLatLng = new window.kakao.maps.LatLng(pos.coords.latitude, pos.coords.longitude);
+        mapRef.current.panTo(moveLatLng);
+        mapRef.current.setLevel(5);
+      },
+      () => alert("현재 위치를 불러올 수 없습니다.")
+    );
+  };
+
   const initMap = () => {
     if (!mapContainerRef.current || !window.kakao?.maps) return;
     try {
       const map = new window.kakao.maps.Map(mapContainerRef.current, {
-        center: new window.kakao.maps.LatLng(36.5, 127.8),
-        level: 10,
+        center: new window.kakao.maps.LatLng(35.8, 127.8),
+        level: 13,
       });
       mapRef.current = map;
       window.addEventListener("resize", () => mapRef.current?.relayout());
       setMapLoaded(true);
       setMapLoadError(false);
+
+      // 전국 전체 명소 맞춤 범위 자동 적용
+      setTimeout(() => {
+        if (filteredSpots.length > 0) {
+          const bounds = new window.kakao.maps.LatLngBounds();
+          filteredSpots.forEach(s => bounds.extend(new window.kakao.maps.LatLng(s.lat, s.lng)));
+          map.setBounds(bounds);
+        }
+      }, 500);
     } catch (e) {
       console.error("Kakao Map init error:", e);
       setMapLoadError(true);
@@ -175,20 +212,56 @@ export default function FlowerMapClient() {
   }, [selectedSpot]);
 
   return (
-    <>
-      {/* ====== 데스크탑 ====== */}
-      <div className="hidden md:flex map-page-root">
-        {/* 왼쪽 사이드 패널 */}
-        <div className="w-[400px] shrink-0 flex flex-col h-full bg-white" style={{borderRight:"2px solid #FCE7F3", boxShadow:"4px 0 20px rgba(244,114,182,0.08)"}}>
+    <div className="w-full h-screen flex flex-col overflow-hidden bg-slate-50">
+      {/* ====== 상단 메뉴바 (Top Navigation Header) ====== */}
+      <header className="w-full bg-white/95 backdrop-blur-md border-b-2 border-pink-100 px-4 h-14 flex items-center justify-between shrink-0 z-30 shadow-xs">
+        <div className="flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+            <span className="text-2xl">🌸</span>
+            <span className="text-xl font-black text-rose-500 tracking-tight">꽃맵</span>
+          </Link>
+          <span className="hidden sm:inline-block text-xs font-bold text-rose-400 bg-rose-50 px-2.5 py-0.5 rounded-full border border-rose-100">
+            2026 봄
+          </span>
+        </div>
+
+        {/* 패밀리 사이트 버튼들 */}
+        <nav className="hidden lg:flex items-center gap-2 overflow-x-auto max-w-[55%] py-1 custom-scrollbar">
+          <a href="https://tools.weknews.com" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border border-slate-200 hover:border-rose-200 transition-all shadow-2xs">💰 금융/세금 계산</a>
+          <a href="https://map.weknews.com" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border border-slate-200 hover:border-rose-200 transition-all shadow-2xs">🏄‍♂️ 피서지 지도</a>
+          <a href="https://drive.weknews.com" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border border-slate-200 hover:border-rose-200 transition-all shadow-2xs">🚗 드라이브 코스</a>
+          <a href="https://mystic.weknews.com" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border border-slate-200 hover:border-rose-200 transition-all shadow-2xs">🔮 AI 사주/타로</a>
+          <a href="https://maple.weknews.com" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border border-slate-200 hover:border-rose-200 transition-all shadow-2xs">🍁 단풍 명소</a>
+          <a href="https://download.weknews.com" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border border-slate-200 hover:border-rose-200 transition-all shadow-2xs">💻 필수 SW 다운</a>
+          <a href="https://vacation.weknews.com" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border border-slate-200 hover:border-rose-200 transition-all shadow-2xs">🎒 방학 체험학습</a>
+          <a href="https://doc.weknews.com" target="_blank" rel="noopener noreferrer" className="shrink-0 px-3 py-1 rounded-full text-xs font-bold bg-slate-50 hover:bg-rose-50 text-slate-700 hover:text-rose-500 border border-slate-200 hover:border-rose-200 transition-all shadow-2xs">📋 서식 자료실</a>
+        </nav>
+
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          <Link href="/flowers" className="text-xs font-bold text-slate-600 hover:text-rose-500 px-3 py-1.5 rounded-full hover:bg-rose-50 transition-colors flex items-center gap-1">
+            <span>🌸</span> <span className="hidden sm:inline">봄꽃 종류</span>
+          </Link>
+          <Link href="/calendar" className="text-xs font-bold text-slate-600 hover:text-rose-500 px-3 py-1.5 rounded-full hover:bg-rose-50 transition-colors flex items-center gap-1">
+            <span>📅</span> <span className="hidden sm:inline">개화 캘린더</span>
+          </Link>
+          <Link href="/guide" className="text-xs font-bold text-slate-600 hover:text-rose-500 px-3 py-1.5 rounded-full hover:bg-rose-50 transition-colors flex items-center gap-1">
+            <span>💡</span> <span className="hidden sm:inline">꽃구경 가이드</span>
+          </Link>
+        </div>
+      </header>
+
+      {/* ====== 메인 컨텐츠 영역 ====== */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* ====== 데스크탑 ====== */}
+        <div className="hidden md:flex w-full h-full">
+          {/* 왼쪽 사이드 패널 */}
+          <div className="w-[400px] shrink-0 flex flex-col h-full bg-white" style={{borderRight:"2px solid #FCE7F3", boxShadow:"4px 0 20px rgba(244,114,182,0.08)"}}>
 
           {/* 패널 헤더 */}
           <div className="px-5 py-4 shrink-0" style={{background:"linear-gradient(135deg, #FFF0F7, #FDF2F8)", borderBottom:"1.5px solid #FBCFE8"}}>
             <div className="flex items-center gap-2 mb-4">
-              <Link href="/" className="flex items-center gap-1.5">
-                <span className="text-xl">🌸</span>
-                <span className="font-black text-rose-500 text-lg">꽃맵</span>
-              </Link>
-              <span className="ml-auto text-xs font-black text-rose-400 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">2026 봄</span>
+              <span className="font-black text-rose-500 text-lg">📍 봄꽃 명소 탐색</span>
+              <span className="ml-auto text-xs font-black text-rose-400 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">전국 60+ 명소</span>
             </div>
 
             {/* 검색바 */}
@@ -327,6 +400,15 @@ export default function FlowerMapClient() {
         <div className="flex-1 relative h-full">
           <div ref={mapContainerRef} className="w-full h-full" />
 
+          {/* 지도 컨트롤 이모티콘 버튼 오버레이 (확대, 축소, 내위치, 전체보기) */}
+          <div className="absolute top-5 right-5 z-20 flex flex-col gap-2 shadow-xl rounded-2xl bg-white/95 backdrop-blur-md p-1.5 border border-pink-200">
+            <button onClick={handleZoomIn} title="지도 확대" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">➕</button>
+            <button onClick={handleZoomOut} title="지도 축소" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">➖</button>
+            <div className="h-px bg-pink-100 my-0.5" />
+            <button onClick={handleMyLocation} title="내 위치로 이동" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">🎯</button>
+            <button onClick={fitAllBounds} title="전국 전체 명소 보기" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">🗺️</button>
+          </div>
+
           {!mapLoaded && !mapLoadError && (
             <div className="absolute inset-0 flex items-center justify-center bg-rose-50">
               <div className="text-center">
@@ -458,6 +540,16 @@ export default function FlowerMapClient() {
         {activeTab === "map" && (
           <div className="flex-1 relative overflow-hidden">
             <div ref={mapContainerRef} className="w-full h-full" />
+            
+            {/* 모바일 지도 조작 컨트롤 */}
+            <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 shadow-lg rounded-2xl bg-white/95 backdrop-blur-md p-1 border border-pink-200">
+              <button onClick={handleZoomIn} title="지도 확대" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">➕</button>
+              <button onClick={handleZoomOut} title="지도 축소" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">➖</button>
+              <div className="h-px bg-pink-100 my-0.5" />
+              <button onClick={handleMyLocation} title="내 위치" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">🎯</button>
+              <button onClick={fitAllBounds} title="전체보기" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">🗺️</button>
+            </div>
+
             {!mapLoaded && !mapLoadError && (
               <div className="absolute inset-0 flex items-center justify-center bg-rose-50">
                 <div className="text-center">
@@ -472,6 +564,7 @@ export default function FlowerMapClient() {
           </div>
         )}
       </div>
-    </>
+    </div>
+  </div>
   );
 }
