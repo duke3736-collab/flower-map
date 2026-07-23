@@ -54,6 +54,28 @@ export default function CoursesPage() {
       emoji: "🌸",
       color: "bg-blue-50 border-blue-100",
     },
+    {
+      id: "course-5",
+      title: "서울 궁궐 목련 & 한강 벚꽃 당일 코스",
+      region: "서울/경기",
+      season: "3월 말 ~ 4월 초",
+      tags: ["고궁목련", "한강벚꽃", "도심피크닉", "대중교통"],
+      description: "창경궁의 고풍스러운 백목련을 감상하고 여의도 윤중로 벚꽃 터널과 뚝섬 튤립정원 피크닉까지 즐기는 서울 대표 당일 코스.",
+      spots: ["창경궁 백목련", "여의도 윤중로", "뚝섬 한강공원 튤립"],
+      emoji: "🏛️",
+      color: "bg-purple-50 border-purple-100",
+    },
+    {
+      id: "course-6",
+      title: "전남 노란 꽃길 (구례 산수유 & 장성 유채) 코스",
+      region: "전라/광주",
+      season: "3월 중순 ~ 5월 초",
+      tags: ["산수유", "유채꽃", "황룡강", "전라도맛집"],
+      description: "지리산 구례 산수유 마을의 팝콘 같은 노란 꽃담길과 장성 황룡강변의 끝없는 유채꽃밭을 이어 달리는 감성 코스.",
+      spots: ["구례 산수유마을", "담양 메타세쿼이아", "장성 황룡강 유채"],
+      emoji: "🌻",
+      color: "bg-amber-50 border-amber-100",
+    },
   ];
 
   return (
