@@ -349,7 +349,7 @@ export default function FlowerMapClient() {
           </div>
 
           {/* 명소 목록 */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pt-3 pb-24 space-y-2 bg-slate-50">
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pt-3 pb-48 space-y-2 bg-slate-50">
             {filteredSpots.length === 0 ? (
               <div className="text-center py-16">
                 <div className="text-5xl mb-3">🔍</div>
@@ -426,10 +426,14 @@ export default function FlowerMapClient() {
               );
             })}
 
+            {/* 하단 여유 스페이서 */}
+            <div className="h-32 shrink-0" />
+
             {/* 광고 */}
             <div className="bg-white rounded-2xl overflow-hidden border border-rose-100">
               <AdBanner dataAdSlot="flower-map-sidebar" dataAdFormat="rectangle" style={{ minHeight: 250 }} />
             </div>
+            <div className="h-16 shrink-0" />
           </div>
 
           {/* 하단 광고 */}
@@ -526,7 +530,7 @@ export default function FlowerMapClient() {
 
         {/* 목록 탭 */}
         {activeTab === "list" && (
-          <div className="flex-1 overflow-y-auto custom-scrollbar px-3 py-3 space-y-2 bg-slate-50">
+          <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pt-3 pb-48 space-y-2 bg-slate-50">
             <div className="bg-white rounded-2xl overflow-hidden border border-rose-100">
               <AdBanner dataAdSlot="flower-map-mobile-top" dataAdFormat="auto" style={{ minHeight: 60 }} />
             </div>
@@ -574,7 +578,8 @@ export default function FlowerMapClient() {
             <div className="bg-white rounded-2xl overflow-hidden border border-rose-100">
               <AdBanner dataAdSlot="flower-map-mobile-bottom" dataAdFormat="auto" style={{ minHeight: 60 }} />
             </div>
-            <div className="h-4" />
+            {/* 하단 스크롤용 여유 빈 공간 */}
+            <div className="h-36 shrink-0" />
           </div>
         )}
 
