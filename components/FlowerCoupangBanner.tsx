@@ -28,9 +28,9 @@ const SPRING_BANNERS: FlowerCoupangBanner[] = [
     badge: "FASHION",
     badgeBg: "bg-rose-500",
     title: "벚꽃 나들이 패션! 봄 원피스·가디건·모자 트렌드 모음",
-    linkText: "봄 패션 기획전 보러가기 →",
+    linkText: "봄 원피스/패션 기획전 보러가기 →",
     imageUrl: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&auto=format&fit=crop&q=60",
-    link: "https://link.coupang.com/a/fCIFqWgDee"
+    link: "https://link.coupang.com/a/fCKu1sevv2"
   },
   {
     id: 3,
