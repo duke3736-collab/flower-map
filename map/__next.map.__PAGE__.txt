@@ -1,0 +1,6 @@
+1:"$Sreact.fragment"
+2:"$Sreact.suspense"
+3:I[77292,["/_next/static/chunks/0u-r32wehi7y8.js","/_next/static/chunks/3leqvzmng8zdw.js","/_next/static/chunks/3q_v9m4dlo_lb.js","/_next/static/chunks/131qh8_cx37n2.js"],"default"]
+4:I[61735,["/_next/static/chunks/0u-r32wehi7y8.js","/_next/static/chunks/3leqvzmng8zdw.js"],"OutletBoundary"]
+0:{"rsc":["$","$1","c",{"children":[["$","div",null,{"className":"fixed inset-0 w-full h-full spring-bg","children":["$","$2",null,{"fallback":["$","div",null,{"className":"w-full h-full flex items-center justify-center","children":["$","div",null,{"className":"text-center space-y-3 animate-pulse","children":[["$","div",null,{"className":"text-5xl","children":"🌸"}],["$","p",null,{"className":"text-pink-300 font-bold","children":"봄꽃 지도를 불러오는 중..."}]]}]}],"children":["$","$L3",null,{}]}]}],[["$","script","script-0",{"src":"/_next/static/chunks/3q_v9m4dlo_lb.js","async":true}],["$","script","script-1",{"src":"/_next/static/chunks/131qh8_cx37n2.js","async":true}]],["$","$L4",null,{"children":["$","$2",null,{"name":"Next.MetadataOutlet","children":"$@5"}]}]]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"zEJ-2nX6EuIulK5AQzP0S"}
+5:null
