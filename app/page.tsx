@@ -259,7 +259,7 @@ export default function HomePage() {
                 desc: "온 마을이 노란빛으로 물드는 600년 전통의 산수유 마을.", 
                 badge: "3월 절정", 
                 month: "3월 초 ~ 하순",
-                imageUrl: "https://images.unsplash.com/photo-1508672019048-805479767385?w=800&auto=format&fit=crop&q=80"
+                imageUrl: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=800&auto=format&fit=crop&q=80"
               },
               { 
                 name: "경주 불국사 겹벚꽃", 
