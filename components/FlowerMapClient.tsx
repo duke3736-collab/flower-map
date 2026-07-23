@@ -373,6 +373,77 @@ export default function FlowerMapClient() {
 
           {/* 명소 목록 */}
           <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pt-3 pb-48 space-y-2 bg-slate-50">
+            {/* ====== 마커/장소 클릭 시 사이드바 최상단 고정 상세 카드 ====== */}
+            {selectedSpot && (
+              <div className="mb-4 bg-gradient-to-br from-rose-500 via-pink-600 to-rose-700 text-white rounded-3xl p-5 shadow-2xl border-2 border-rose-300 animate-fade-up">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-3xl">🌸</span>
+                    <div>
+                      <h2 className="text-xl font-black text-white leading-tight">{selectedSpot.name}</h2>
+                      <p className="text-xs text-rose-100 font-bold mt-0.5">📍 {selectedSpot.address}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedSpot(null)}
+                    className="text-xs font-black bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-full border border-white/30 transition-all shrink-0 cursor-pointer"
+                  >
+                    닫기 ✕
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-2 my-3 flex-wrap">
+                  <span className="bg-white text-rose-600 text-xs font-black px-2.5 py-0.5 rounded-full shadow-xs">
+                    {STATUS_LABEL[selectedSpot.status]}
+                  </span>
+                  <span className="bg-rose-900/40 text-rose-100 text-xs font-bold px-2.5 py-0.5 rounded-full border border-rose-400/30">
+                    {selectedSpot.region} · 절정 {selectedSpot.peakStartDate}~{selectedSpot.peakEndDate}
+                  </span>
+                </div>
+
+                <p className="text-xs text-rose-50 leading-relaxed mb-3 bg-rose-800/40 p-3 rounded-2xl border border-rose-400/20 font-medium">
+                  {selectedSpot.description}
+                </p>
+
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="bg-white/10 backdrop-blur-xs p-2.5 rounded-xl border border-white/20">
+                    <p className="text-[10px] text-pink-200 font-bold mb-0.5">🅿 주차 안내</p>
+                    <p className="text-[11px] text-white font-medium leading-tight">{selectedSpot.parking}</p>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-xs p-2.5 rounded-xl border border-white/20">
+                    <p className="text-[10px] text-amber-200 font-bold mb-0.5">💡 꿀팁</p>
+                    <p className="text-[11px] text-white font-medium leading-tight">{selectedSpot.tip}</p>
+                  </div>
+                </div>
+
+                {selectedSpot.festivalName && (
+                  <div className="flex items-center gap-2 bg-amber-400/20 border border-amber-300/40 rounded-xl px-3 py-1.5 mb-3">
+                    <span>🎪</span>
+                    <span className="text-xs text-amber-200 font-black">{selectedSpot.festivalName}</span>
+                  </div>
+                )}
+
+                <div className="flex gap-2 pt-1">
+                  <a
+                    href={`https://map.kakao.com/link/to/${encodeURIComponent(selectedSpot.name)},${selectedSpot.lat},${selectedSpot.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-yellow-400 hover:bg-yellow-300 text-slate-900 font-black text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-1 transition-all shadow-md active:scale-95"
+                  >
+                    <span>🟡</span> 카카오맵 길찾기
+                  </a>
+                  <a
+                    href={`https://map.naver.com/v5/search/${encodeURIComponent(selectedSpot.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-emerald-500 hover:bg-emerald-400 text-white font-black text-xs py-2.5 px-3 rounded-xl flex items-center justify-center gap-1 transition-all shadow-md active:scale-95"
+                  >
+                    <span>🟢</span> 네이버지도 길찾기
+                  </a>
+                </div>
+              </div>
+            )}
+
             {filteredSpots.length === 0 ? (
               <div className="text-center py-16">
                 <div className="text-5xl mb-3">🔍</div>
@@ -547,6 +618,61 @@ export default function FlowerMapClient() {
         {/* 목록 탭 */}
         {activeTab === "list" && (
           <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pt-3 pb-48 space-y-2 bg-slate-50">
+            {/* ====== 모바일 목록 최상단 고정 상세 카드 ====== */}
+            {selectedSpot && (
+              <div className="mb-3 bg-gradient-to-br from-rose-500 via-pink-600 to-rose-700 text-white rounded-3xl p-4 shadow-xl border-2 border-rose-300 animate-fade-up">
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div>
+                    <h2 className="text-lg font-black text-white leading-tight">🌸 {selectedSpot.name}</h2>
+                    <p className="text-[11px] text-rose-100 font-bold mt-0.5">📍 {selectedSpot.address}</p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedSpot(null)}
+                    className="text-[10px] font-black bg-white/20 hover:bg-white/30 text-white px-2 py-0.5 rounded-full border border-white/30 shrink-0 cursor-pointer"
+                  >
+                    닫기 ✕
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-1.5 my-2 flex-wrap">
+                  <span className="bg-white text-rose-600 text-[11px] font-black px-2 py-0.5 rounded-full shadow-xs">
+                    {STATUS_LABEL[selectedSpot.status]}
+                  </span>
+                  <span className="bg-rose-900/40 text-rose-100 text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    {selectedSpot.region} · 절정 {selectedSpot.peakStartDate}~{selectedSpot.peakEndDate}
+                  </span>
+                </div>
+
+                <p className="text-xs text-rose-50 leading-relaxed mb-2.5 bg-rose-800/40 p-2.5 rounded-xl border border-rose-400/20 font-medium">
+                  {selectedSpot.description}
+                </p>
+
+                <div className="bg-white/10 p-2 rounded-xl mb-2 border border-white/20">
+                  <p className="text-[10px] text-amber-200 font-bold mb-0.5">💡 꿀팁</p>
+                  <p className="text-[11px] text-white leading-tight">{selectedSpot.tip}</p>
+                </div>
+
+                <div className="flex gap-1.5 pt-1">
+                  <a
+                    href={`https://map.kakao.com/link/to/${encodeURIComponent(selectedSpot.name)},${selectedSpot.lat},${selectedSpot.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-yellow-400 text-slate-900 font-black text-xs py-2 rounded-xl flex items-center justify-center gap-1 transition-all shadow-md active:scale-95"
+                  >
+                    🟡 카카오 길찾기
+                  </a>
+                  <a
+                    href={`https://map.naver.com/v5/search/${encodeURIComponent(selectedSpot.name)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 bg-emerald-500 text-white font-black text-xs py-2 rounded-xl flex items-center justify-center gap-1 transition-all shadow-md active:scale-95"
+                  >
+                    🟢 네이버 길찾기
+                  </a>
+                </div>
+              </div>
+            )}
+
             <div className="bg-white rounded-2xl overflow-hidden border border-rose-100">
               <AdBanner dataAdSlot="flower-map-mobile-top" dataAdFormat="auto" style={{ minHeight: 60 }} />
             </div>
