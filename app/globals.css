@@ -177,12 +177,12 @@ html, body {
 }
 
 /* ===== 개화 상태 뱃지 ===== */
-.status-none   { background:#F1F5F9; color:#64748b; border:1px solid #E2E8F0; }
-.status-bud    { background:#FFFBEB; color:#92400E; border:1px solid #FDE68A; }
-.status-start  { background:#FFF0F7; color:#9D174D; border:1px solid #FBCFE8; }
-.status-bloom  { background:#FDF2F8; color:#BE185D; border:1px solid #F9A8D4; }
-.status-peak   { background:linear-gradient(135deg,#FFF0F7,#F0F0FF); color:#7C3AED; border:1px solid #DDD6FE; animation:peakPulse 2s ease infinite; }
-.status-fall   { background:#F8FAFC; color:#94A3B8; border:1px solid #E2E8F0; }
+.status-none   { background:#F1F5F9; color:#334155; border:1.5px solid #CBD5E1; font-weight:800; }
+.status-bud    { background:#FEF3C7; color:#78350F; border:1.5px solid #FCD34D; font-weight:800; }
+.status-start  { background:#FCE7F3; color:#831843; border:1.5px solid #F9A8D4; font-weight:800; }
+.status-bloom  { background:#FDF2F8; color:#9D174D; border:1.5px solid #F472B6; font-weight:800; }
+.status-peak   { background:linear-gradient(135deg,#FCE7F3,#EDE9FE); color:#5B21B6; border:1.5px solid #C4B5FD; font-weight:900; animation:peakPulse 2s ease infinite; }
+.status-fall   { background:#F1F5F9; color:#475569; border:1.5px solid #CBD5E1; font-weight:800; }
 
 @keyframes peakPulse {
   0%,100% { box-shadow: 0 0 0 0 rgba(236,72,153,0.25); }

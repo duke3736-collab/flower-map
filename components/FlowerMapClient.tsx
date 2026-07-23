@@ -64,10 +64,18 @@ export default function FlowerMapClient() {
   };
 
   const handleZoomIn = () => {
-    if (mapRef.current) mapRef.current.setLevel(mapRef.current.getLevel() - 1, { animate: true });
+    if (!mapRef.current) return;
+    const currentLvl = mapRef.current.getLevel();
+    if (currentLvl > 1) {
+      mapRef.current.setLevel(currentLvl - 1, { animate: { duration: 300 } });
+    }
   };
   const handleZoomOut = () => {
-    if (mapRef.current) mapRef.current.setLevel(mapRef.current.getLevel() + 1, { animate: true });
+    if (!mapRef.current) return;
+    const currentLvl = mapRef.current.getLevel();
+    if (currentLvl < 14) {
+      mapRef.current.setLevel(currentLvl + 1, { animate: { duration: 300 } });
+    }
   };
   const handleMyLocation = () => {
     if (!navigator.geolocation || !mapRef.current || !window.kakao?.maps) {
@@ -307,20 +315,20 @@ export default function FlowerMapClient() {
 
             {/* 지역 필터 */}
             <div className="flex gap-1.5 flex-wrap">
-              <button onClick={() => setSelectedRegion("all")} className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${selectedRegion === "all" ? "bg-rose-500 text-white shadow-md" : "bg-white text-slate-500 border border-slate-200 hover:border-rose-200 hover:text-rose-400"}`}>전국</button>
+              <button onClick={() => setSelectedRegion("all")} className={`px-3 py-1 rounded-full text-xs font-black transition-all ${selectedRegion === "all" ? "bg-rose-500 text-white shadow-md" : "bg-white text-slate-800 border-1.5 border-slate-300 hover:border-rose-300 hover:text-rose-600 font-bold"}`}>전국</button>
               {REGIONS.map(r => (
-                <button key={r} onClick={() => setSelectedRegion(r)} className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${selectedRegion === r ? "bg-rose-500 text-white shadow-md" : "bg-white text-slate-500 border border-slate-200 hover:border-rose-200 hover:text-rose-400"}`}>{r}</button>
+                <button key={r} onClick={() => setSelectedRegion(r)} className={`px-2.5 py-1 rounded-full text-xs font-black transition-all ${selectedRegion === r ? "bg-rose-500 text-white shadow-md" : "bg-white text-slate-800 border-1.5 border-slate-300 hover:border-rose-300 hover:text-rose-600 font-bold"}`}>{r}</button>
               ))}
             </div>
           </div>
 
           {/* 꽃 종류 필터 */}
           <div className="px-4 py-3 shrink-0 bg-white" style={{borderBottom:"1.5px solid #FCE7F3"}}>
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">🌸 꽃 종류 필터</p>
+            <p className="text-xs text-slate-700 font-black uppercase tracking-wider mb-2">🌸 꽃 종류 필터</p>
             <div className="flex gap-1.5 flex-wrap">
-              <button onClick={() => setSelectedFlowerId("all")} className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${selectedFlowerId === "all" ? "bg-rose-100 text-rose-600 border border-rose-200" : "bg-slate-50 text-slate-500 border border-slate-200 hover:bg-rose-50 hover:text-rose-400"}`}>전체</button>
+              <button onClick={() => setSelectedFlowerId("all")} className={`px-3 py-1 rounded-full text-xs font-black transition-all ${selectedFlowerId === "all" ? "bg-rose-100 text-rose-700 border-1.5 border-rose-300" : "bg-slate-100 text-slate-800 border-1.5 border-slate-300 hover:bg-rose-50 hover:text-rose-600 font-bold"}`}>전체</button>
               {FLOWERS.map(f => (
-                <button key={f.id} onClick={() => setSelectedFlowerId(f.id)} className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${selectedFlowerId === f.id ? "bg-rose-100 text-rose-600 border border-rose-200 shadow-sm" : "bg-slate-50 text-slate-500 border border-slate-200 hover:bg-rose-50 hover:text-rose-400"}`}>
+                <button key={f.id} onClick={() => setSelectedFlowerId(f.id)} className={`px-2.5 py-1 rounded-full text-xs font-black transition-all ${selectedFlowerId === f.id ? "bg-rose-100 text-rose-700 border-1.5 border-rose-300 shadow-xs" : "bg-slate-50 text-slate-800 border-1.5 border-slate-300 hover:bg-rose-50 hover:text-rose-600 font-bold"}`}>
                   {f.emoji} {f.name}
                 </button>
               ))}
@@ -329,9 +337,9 @@ export default function FlowerMapClient() {
 
           {/* 결과 카운트 */}
           <div className="px-5 py-2.5 bg-rose-50 shrink-0 flex items-center justify-between">
-            <span className="text-sm font-bold text-rose-500">🌸 {filteredSpots.length}개 명소</span>
+            <span className="text-sm font-black text-rose-600">🌸 {filteredSpots.length}개 명소</span>
             {selectedSpot && (
-              <button onClick={() => setSelectedSpot(null)} className="text-xs text-slate-400 hover:text-rose-400 font-bold transition-colors">선택 해제 ×</button>
+              <button onClick={() => setSelectedSpot(null)} className="text-xs text-slate-500 hover:text-rose-500 font-bold transition-colors">선택 해제 ×</button>
             )}
           </div>
 
@@ -340,7 +348,7 @@ export default function FlowerMapClient() {
             {filteredSpots.length === 0 ? (
               <div className="text-center py-16">
                 <div className="text-5xl mb-3">🔍</div>
-                <p className="text-slate-400 font-medium text-sm">검색 결과가 없습니다</p>
+                <p className="text-slate-500 font-bold text-sm">검색 결과가 없습니다</p>
               </div>
             ) : filteredSpots.map(spot => {
               const flower = FLOWERS.find(f => spot.flowerIds[0] === f.id);
@@ -349,20 +357,20 @@ export default function FlowerMapClient() {
                 <div
                   key={spot.id}
                   onClick={() => setSelectedSpot(isSelected ? null : spot)}
-                  className={`bg-white rounded-2xl cursor-pointer transition-all border-2 overflow-hidden ${isSelected ? "border-rose-300 shadow-lg" : "border-transparent hover:border-rose-100 hover:shadow-md"}`}
+                  className={`bg-white rounded-2xl cursor-pointer transition-all border-2 overflow-hidden ${isSelected ? "border-rose-400 shadow-lg" : "border-slate-100 hover:border-rose-200 hover:shadow-md"}`}
                 >
                   <div className="p-4">
                     <div className="flex items-start gap-3">
-                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 ${isSelected ? "bg-rose-50" : "bg-slate-50"}`}>{flower?.emoji || "🌸"}</div>
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0 ${isSelected ? "bg-rose-100" : "bg-slate-100"}`}>{flower?.emoji || "🌸"}</div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <h3 className="font-black text-slate-800 text-sm">{spot.name}</h3>
-                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${STATUS_CLASS[spot.status]}`}>{STATUS_LABEL[spot.status]}</span>
+                          <h3 className="font-black text-slate-900 text-base">{spot.name}</h3>
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-extrabold ${STATUS_CLASS[spot.status]}`}>{STATUS_LABEL[spot.status]}</span>
                         </div>
-                        <p className="text-xs text-slate-400 truncate mb-1">📍 {spot.address}</p>
+                        <p className="text-xs text-slate-700 font-bold truncate mb-1.5">📍 {spot.address}</p>
                         <div className="flex items-center gap-2">
-                          <span className="text-[11px] bg-pink-50 text-rose-500 px-2 py-0.5 rounded-full font-bold border border-rose-100">{spot.region}</span>
-                          <span className="text-[11px] text-slate-400 font-bold">절정 {spot.peakStartDate}~{spot.peakEndDate}</span>
+                          <span className="text-[11px] bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full font-black border border-rose-200">{spot.region}</span>
+                          <span className="text-[11px] text-slate-800 font-extrabold">절정 {spot.peakStartDate}~{spot.peakEndDate}</span>
                         </div>
                       </div>
                     </div>
