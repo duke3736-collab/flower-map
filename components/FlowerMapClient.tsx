@@ -241,15 +241,23 @@ export default function FlowerMapClient() {
     });
   }, [mapLoaded, filteredSpots, selectedSpot, isMobile]);
 
-  useEffect(() => {
-    if (selectedSpot && mapRef.current && window.kakao?.maps) {
-      const targetLatLng = new window.kakao.maps.LatLng(selectedSpot.lat, selectedSpot.lng);
-      mapRef.current.setLevel(4, { animate: { duration: 350 } });
-      mapRef.current.panTo(targetLatLng);
+  const spotCardRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
-      if (isMobile) {
-        setActiveTab("map");
+  useEffect(() => {
+    if (selectedSpot) {
+      if (mapRef.current && window.kakao?.maps) {
+        const targetLatLng = new window.kakao.maps.LatLng(selectedSpot.lat, selectedSpot.lng);
+        mapRef.current.setLevel(4, { animate: { duration: 350 } });
+        mapRef.current.panTo(targetLatLng);
       }
+
+      // 데스크탑: 사이드바의 해당 명소 카드로 자동 부드러운 스크롤 이동
+      setTimeout(() => {
+        const el = spotCardRefs.current[selectedSpot.id];
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 150);
     }
   }, [selectedSpot, isMobile]);
 
@@ -361,8 +369,9 @@ export default function FlowerMapClient() {
               return (
                 <div
                   key={spot.id}
+                  ref={(el) => { spotCardRefs.current[spot.id] = el; }}
                   onClick={() => setSelectedSpot(isSelected ? null : spot)}
-                  className={`bg-white rounded-2xl cursor-pointer transition-all border-2 overflow-hidden ${isSelected ? "border-rose-400 shadow-lg" : "border-slate-100 hover:border-rose-200 hover:shadow-md"}`}
+                  className={`bg-white rounded-2xl cursor-pointer transition-all border-2 overflow-hidden ${isSelected ? "border-rose-500 shadow-xl ring-4 ring-rose-100 scale-[1.02]" : "border-slate-100 hover:border-rose-200 hover:shadow-md"}`}
                 >
                   <div className="p-4">
                     <div className="flex items-start gap-3">
@@ -531,9 +540,9 @@ export default function FlowerMapClient() {
               const flower = FLOWERS.find(f => spot.flowerIds[0] === f.id);
               const isSelected = selectedSpot?.id === spot.id;
               return (
-                <div key={spot.id}>
+                <div key={spot.id} ref={(el) => { spotCardRefs.current[spot.id] = el; }}>
                   <div onClick={() => setSelectedSpot(isSelected ? null : spot)}
-                    className={`bg-white rounded-2xl cursor-pointer border-2 transition-all ${isSelected ? "border-rose-300 shadow-lg" : "border-transparent hover:border-rose-100"}`}>
+                    className={`bg-white rounded-2xl cursor-pointer border-2 transition-all ${isSelected ? "border-rose-500 shadow-xl ring-4 ring-rose-100 scale-[1.01]" : "border-transparent hover:border-rose-100"}`}>
                     <div className="p-3.5 flex items-center gap-3">
                       <div className="text-2xl">{flower?.emoji || "🌸"}</div>
                       <div className="flex-1 min-w-0">
