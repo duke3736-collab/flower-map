@@ -1,26 +1,253 @@
 @import "tailwindcss";
 
+/* ===== 꽃맵 디자인 시스템 — 밝고 화사한 봄 테마 ===== */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --sakura: #F472B6;
+  --sakura-light: #FDF2F8;
+  --sakura-pale: #FFF0F7;
+  --canola: #FBBF24;
+  --canola-light: #FFFBEB;
+  --leaf: #34D399;
+  --leaf-light: #ECFDF5;
+  --sky: #60A5FA;
+  --lavender: #A78BFA;
+  --peach: #FB923C;
+  --rose: #FB7185;
+
+  /* 그라데이션 */
+  --grad-hero: linear-gradient(135deg, #FFF0F7 0%, #FDF2F8 30%, #F0F7FF 60%, #F5FFFA 100%);
+  --grad-spring: linear-gradient(135deg, #F472B6, #FB923C, #FBBF24);
+  --grad-soft: linear-gradient(135deg, #FDF2F8, #EEF2FF, #F0FFF4);
+  --grad-card: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+
+  --shadow-pink: 0 8px 32px rgba(244, 114, 182, 0.25);
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.06);
+  --shadow-hover: 0 12px 40px rgba(244, 114, 182, 0.2);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ===== 기본 리셋 ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ===== 스크롤바 ===== */
+.custom-scrollbar { scrollbar-width: thin; scrollbar-color: #FBCFE8 transparent; }
+.custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #FBCFE8; border-radius: 2px; }
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* ===== 봄 Hero 배경 ===== */
+.hero-bg {
+  background: linear-gradient(160deg, #FFF5FB 0%, #FFF0F7 25%, #F8F0FF 50%, #F0F8FF 75%, #F0FFF8 100%);
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(244,114,182,0.15) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-bg::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -80px;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(251,207,36,0.12) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ===== 섹션 배경들 ===== */
+.section-pink  { background: linear-gradient(135deg, #FFF0F7, #FDF2F8); }
+.section-yellow{ background: linear-gradient(135deg, #FFFBEB, #FEF9C3); }
+.section-green { background: linear-gradient(135deg, #F0FFF4, #DCFCE7); }
+.section-blue  { background: linear-gradient(135deg, #EFF6FF, #DBEAFE); }
+.section-purple{ background: linear-gradient(135deg, #F5F3FF, #EDE9FE); }
+
+/* ===== 카드 ===== */
+.spring-card {
+  background: white;
+  border-radius: 1.5rem;
+  border: 1.5px solid rgba(244, 114, 182, 0.12);
+  box-shadow: var(--shadow-card);
+  transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+.spring-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(244, 114, 182, 0.3);
+}
+
+.flower-card {
+  background: linear-gradient(145deg, #fff, #fff9fc);
+  border-radius: 1.25rem;
+  border: 1.5px solid rgba(244,114,182,0.1);
+  box-shadow: 0 2px 12px rgba(244,114,182,0.08);
+  transition: all 0.25s ease;
+}
+.flower-card:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 28px rgba(244,114,182,0.18);
+  border-color: rgba(244,114,182,0.3);
+}
+
+/* ===== 내비게이션 ===== */
+.nav-bar {
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(244,114,182,0.1);
+  box-shadow: 0 2px 20px rgba(244,114,182,0.08);
+}
+
+.btn-primary {
+  background: #F472B6;
+  color: #0F172A;
+  font-weight: 900;
+  border-radius: 9999px;
+  border: 2.5px solid #0F172A;
+  box-shadow: 4px 4px 0px #0F172A;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background: #EC4899;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #0F172A;
+}
+.btn-primary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #0F172A;
+}
+
+.btn-secondary {
+  background: white;
+  color: #0F172A;
+  font-weight: 900;
+  border-radius: 9999px;
+  border: 2.5px solid #0F172A;
+  box-shadow: 4px 4px 0px #0F172A;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background: #FDF2F8;
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #0F172A;
+}
+.btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #0F172A;
+}
+
+/* ===== 그라데이션 텍스트 ===== */
+.text-spring {
+  background: linear-gradient(135deg, #EC4899 0%, #F97316 50%, #FBBF24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.text-sakura {
+  background: linear-gradient(135deg, #F472B6, #EC4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ===== 꽃 배지 / 태그 ===== */
+.flower-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #FFF0F7, #FDF2F8);
+  color: #BE185D;
+  border: 1px solid #FBCFE8;
+}
+
+/* ===== 개화 상태 뱃지 ===== */
+.status-none   { background:#F1F5F9; color:#64748b; border:1px solid #E2E8F0; }
+.status-bud    { background:#FFFBEB; color:#92400E; border:1px solid #FDE68A; }
+.status-start  { background:#FFF0F7; color:#9D174D; border:1px solid #FBCFE8; }
+.status-bloom  { background:#FDF2F8; color:#BE185D; border:1px solid #F9A8D4; }
+.status-peak   { background:linear-gradient(135deg,#FFF0F7,#F0F0FF); color:#7C3AED; border:1px solid #DDD6FE; animation:peakPulse 2s ease infinite; }
+.status-fall   { background:#F8FAFC; color:#94A3B8; border:1px solid #E2E8F0; }
+
+@keyframes peakPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(236,72,153,0.25); }
+  50%      { box-shadow: 0 0 0 5px rgba(236,72,153,0); }
+}
+
+/* ===== 꽃잎 낙하 애니메이션 ===== */
+@keyframes petalFall {
+  0%   { transform: translateY(-40px) rotate(0deg) translateX(0); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.6; }
+  100% { transform: translateY(110vh) rotate(720deg) translateX(60px); opacity: 0; }
+}
+.petal-anim { animation: petalFall linear infinite; position: fixed; pointer-events: none; z-index: 0; font-size: 18px; }
+
+/* ===== 섹션 구분선 ===== */
+.section-divider {
+  height: 3px;
+  background: linear-gradient(90deg, transparent, #FBCFE8 30%, #F9A8D4 50%, #FBCFE8 70%, transparent);
+  border-radius: 9999px;
+  margin: 0 auto;
+  width: 200px;
+}
+
+/* ===== 반응형 광고 자리 ===== */
+.ad-slot { min-height: 90px; overflow: hidden; background: #FFF8FC; border-radius: 1rem; border: 1px dashed #FBCFE8; }
+.ad-slot-tall { min-height: 250px; }
+
+/* ===== 지도 페이지 전용 (fixed full screen) ===== */
+.map-page-root {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #FFF5FB;
+  touch-action: none;
+}
+
+/* ===== 애니메이션 유틸 ===== */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes float {
+  0%,100% { transform: translateY(0px); }
+  50%      { transform: translateY(-8px); }
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+.animate-fade-up { animation: fadeUp 0.5s ease forwards; }
+.animate-float   { animation: float 3s ease-in-out infinite; }
+.skeleton {
+  background: linear-gradient(90deg, #FFF0F7 25%, #FDE7F3 50%, #FFF0F7 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ===== 지도 마커 CSS 변수 ===== */
+:root {
+  --marker-scale: 1;
+  --marker-label-display: block;
+  --marker-dot-display: block;
+  --marker-icon-display: none;
 }

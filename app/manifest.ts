@@ -1,0 +1,25 @@
+import { MetadataRoute } from 'next';
+
+export default function manifest(): MetadataRoute.Manifest {
+  return {
+    name: '꽃맵 - 전국 봄꽃 지도',
+    short_name: '꽃맵',
+    description: '2026 전국 봄꽃 개화 시기 및 명소 지도',
+    start_url: '/',
+    display: 'standalone',
+    background_color: '#ffffff',
+    theme_color: '#F472B6',
+    icons: [
+      {
+        src: '/icon-192x192.png',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        src: '/icon-512x512.png',
+        sizes: '512x512',
+        type: 'image/png',
+      },
+    ],
+  };
+}
