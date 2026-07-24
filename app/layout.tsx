@@ -25,6 +25,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#F472B6",
 };
 
 const ADSENSE_CLIENT_ID = "ca-pub-6635245275061755";
@@ -36,6 +37,9 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <head>
         <meta name="google-site-verification" content="M2v9DVUow4HYMRiyu346mcAkEvvWwMpq51dPk0upQbc" />
         <meta name="naver-site-verification" content="eaefac08c22cc3895cbc14fdbe7908cc269698b4" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="apple-touch-icon" href="/icon-512x512.png" />
         <Script
           async
           src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT_ID}`}
