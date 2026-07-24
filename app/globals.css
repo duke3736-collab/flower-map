@@ -217,6 +217,11 @@ html, body {
 .ad-slot { min-height: 90px; overflow: hidden; background: #FFF8FC; border-radius: 1rem; border: 1px dashed #FBCFE8; }
 .ad-slot-tall { min-height: 250px; }
 
+/* 애드센스 광고가 채워지지 않았을 때(빈 공간) 부모 영역까지 완전히 숨기기 */
+div:has(ins.adsbygoogle[data-ad-status="unfilled"]) {
+  display: none !important;
+}
+
 /* ===== 지도 페이지 전용 (fixed full screen) ===== */
 .map-page-root {
   position: fixed;

@@ -53,8 +53,12 @@ export default function AdBanner({
         // @ts-ignore
         (window.adsbygoogle = window.adsbygoogle || []).push({});
         isPushed.current = true;
-      } catch (error) {
-        console.error("AdSense error:", error);
+      } catch (error: any) {
+        if (error?.message && error.message.includes("availableWidth")) {
+          console.warn("[AdSense] Suppressed 'No slot size' warning.");
+        } else {
+          console.warn("AdSense warning:", error);
+        }
       }
       cleanup();
     };

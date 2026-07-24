@@ -31,11 +31,56 @@ export default function FlowerMapClient() {
   const [mapLoadError, setMapLoadError] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [activeTab, setActiveTab] = useState<"list" | "map">("list");
+  const [zoomLevel, setZoomLevel] = useState(13);
   const [selectedFlowerId, setSelectedFlowerId] = useState<string>("all");
   const [selectedRegion, setSelectedRegion] = useState<string>("all");
   const [selectedSpot, setSelectedSpot] = useState<Spot | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(true);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallBtn, setShowInstallBtn] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const dismissed = localStorage.getItem("pwa-install-dismissed");
+    if (dismissed === "true") {
+      setIsDismissed(true);
+    }
+
+    const handleBeforeInstallPrompt = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+      setShowInstallBtn(true);
+    };
+
+    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      setShowInstallBtn(false);
+    }
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if (outcome === "accepted") {
+      setDeferredPrompt(null);
+      setShowInstallBtn(false);
+    }
+  };
+
+  const handleDismissInstall = () => {
+    localStorage.setItem("pwa-install-dismissed", "true");
+    setIsDismissed(true);
+    setShowInstallBtn(false);
+  };
 
   const filteredSpots = SPOTS.filter((spot) => {
     if (selectedFlowerId !== "all" && !spot.flowerIds.includes(selectedFlowerId)) return false;
@@ -131,6 +176,10 @@ export default function FlowerMapClient() {
       window.addEventListener("resize", () => mapRef.current?.relayout());
       setMapLoaded(true);
       setMapLoadError(false);
+      setZoomLevel(map.getLevel());
+      window.kakao.maps.event.addListener(map, "zoom_changed", () => {
+        setZoomLevel(map.getLevel());
+      });
 
       // 전국 전체 명소 맞춤 범위 자동 적용
       setTimeout(() => {
@@ -192,10 +241,25 @@ export default function FlowerMapClient() {
   }, [mapLoaded]);
 
   useEffect(() => {
-    if (isMobile && activeTab === "map" && mapRef.current) {
-      setTimeout(() => mapRef.current?.relayout(), 100);
+    if (activeTab === "map" && mapRef.current && window.kakao?.maps) {
+      setTimeout(() => {
+        if (mapRef.current) {
+          mapRef.current.relayout();
+          if (selectedSpot) {
+            const targetLatLng = new window.kakao.maps.LatLng(selectedSpot.lat, selectedSpot.lng);
+            mapRef.current.setLevel(4);
+            mapRef.current.panTo(targetLatLng);
+          } else if (filteredSpots.length > 0) {
+            const bounds = new window.kakao.maps.LatLngBounds();
+            filteredSpots.forEach(s => bounds.extend(new window.kakao.maps.LatLng(s.lat, s.lng)));
+            mapRef.current.setBounds(bounds);
+          } else {
+            mapRef.current.setCenter(new window.kakao.maps.LatLng(35.8, 127.8));
+          }
+        }
+      }, 150);
     }
-  }, [activeTab, isMobile]);
+  }, [activeTab, selectedSpot, filteredSpots]);
 
   const handleSelectSpot = (spot: Spot | null) => {
     if (spot) {
@@ -223,8 +287,11 @@ export default function FlowerMapClient() {
       const isSelected = selectedSpot?.id === spot.id;
 
       const content = document.createElement("div");
+      const isZoomedOut = zoomLevel >= 11;
+      
       content.innerHTML = `
         <div style="display:flex;flex-direction:column;align-items:center;cursor:pointer;transform:${isSelected ? "translateY(-15px) scale(1.18)" : "translateY(-10px)"};transition:all 0.3s cubic-bezier(0.34,1.56,0.64,1);z-index:${isSelected ? 100 : 10}">
+          ${(!isZoomedOut || isSelected) ? `
           <div style="display:flex;align-items:center;gap:6px;padding:${isSelected ? "8px 18px" : "6px 14px"};border-radius:50px;font-weight:900;font-size:${isSelected ? "14px" : "12px"};
             box-shadow:${isSelected ? "0 8px 25px rgba(225,29,72,0.6)" : (isActive ? "0 4px 16px rgba(236,72,153,0.4)" : "0 2px 8px rgba(0,0,0,0.12)")};
             background:${isSelected ? "linear-gradient(135deg,#BE123C,#E11D48)" : (isActive ? "linear-gradient(135deg,#EC4899,#F43F5E)" : "white")};
@@ -233,6 +300,11 @@ export default function FlowerMapClient() {
             white-space:nowrap;margin-bottom:4px;font-family:'Noto Sans KR',sans-serif;">
             ${emoji} ${spot.name} ${isSelected ? "✨" : ""}
           </div>
+          ` : `
+          <div style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:white;box-shadow:0 2px 6px rgba(0,0,0,0.15);margin-bottom:4px;font-size:14px;border:2px solid ${isActive ? '#EC4899' : '#CBD5E1'};">
+            ${emoji}
+          </div>
+          `}
           <div style="width:${isSelected ? "14px" : "10px"};height:${isSelected ? "14px" : "10px"};border-radius:50%;
             background:${isSelected ? "#E11D48" : (isActive ? "#EC4899" : "#CBD5E1")};
             border:2.5px solid white;
@@ -256,7 +328,7 @@ export default function FlowerMapClient() {
       overlay.setMap(mapRef.current);
       markersRef.current.push(overlay);
     });
-  }, [mapLoaded, filteredSpots, selectedSpot, isMobile]);
+  }, [mapLoaded, filteredSpots, selectedSpot, isMobile, zoomLevel]);
 
   const spotCardRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
@@ -279,7 +351,7 @@ export default function FlowerMapClient() {
   return (
     <div className="w-full h-screen flex flex-col overflow-hidden bg-slate-50">
       {/* ====== 상단 메뉴바 (Top Navigation Header) ====== */}
-      <header className="w-full bg-white/95 backdrop-blur-md border-b-2 border-pink-100 px-4 h-14 flex items-center justify-between shrink-0 z-30 shadow-xs">
+      <header className="hidden md:flex w-full bg-white/95 backdrop-blur-md border-b-2 border-pink-100 px-4 h-14 items-center justify-between shrink-0 z-30 shadow-xs">
         <div className="flex items-center gap-3">
           <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
             <span className="text-2xl">🌸</span>
@@ -315,13 +387,92 @@ export default function FlowerMapClient() {
         </div>
       </header>
 
+      {/* ====== 모바일 상단 헤더 & 필터 & 탭 영역 (모바일에서만 노출) ====== */}
+      <div className="flex md:hidden flex-col shrink-0 bg-white z-30" style={{borderBottom:"2px solid #FCE7F3"}}>
+        {/* 모바일 헤더 */}
+        <div className="shrink-0 px-4 pt-safe-top pt-3 pb-3 bg-white">
+          <div className="flex items-center gap-2 mb-3">
+            <Link href="/" className="flex items-center gap-1.5">
+              <span className="text-lg">🌸</span>
+              <span className="font-black text-rose-500">꽃맵</span>
+            </Link>
+            <span className="ml-auto text-[10px] font-bold text-rose-400 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">2026 봄</span>
+            <button onClick={() => setShowFilters(!showFilters)} className="text-slate-400 ml-1 p-1 rounded-full hover:bg-rose-50 transition-colors">
+              <span className="material-symbols-outlined text-lg">{showFilters ? "expand_less" : "tune"}</span>
+            </button>
+          </div>
+
+          {showFilters && (
+            <div className="space-y-2">
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-300 text-sm material-symbols-outlined">search</span>
+                <input type="text" placeholder="명소 검색..." value={searchQuery} onChange={e => {
+                  setSearchQuery(e.target.value);
+                  if (e.target.value.trim() !== "") { setSelectedRegion("all"); setSelectedFlowerId("all"); }
+                }}
+                  className="w-full bg-rose-50 border border-rose-100 rounded-xl pl-8 pr-9 py-2 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:border-rose-300 transition-colors" />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition-colors p-1 flex items-center justify-center rounded-full cursor-pointer">
+                    <span className="material-symbols-outlined text-sm">close</span>
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+                <button onClick={() => { setSelectedFlowerId("all"); setSearchQuery(""); }} className={`shrink-0 px-3 py-1 rounded-full text-xs font-bold transition-all ${selectedFlowerId === "all" ? "bg-rose-500 text-white shadow-sm" : "bg-white text-slate-500 border border-slate-200"}`}>전체</button>
+                {FLOWERS.map(f => (
+                  <button key={f.id} onClick={() => { setSelectedFlowerId(f.id); setSearchQuery(""); }} className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-bold transition-all ${selectedFlowerId === f.id ? "bg-rose-500 text-white shadow-sm" : "bg-white text-slate-500 border border-slate-200"}`}>
+                    {f.emoji} {f.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 탭 */}
+        <div className="flex shrink-0 bg-white" style={{borderBottom:"2px solid #FCE7F3"}}>
+          {(["list", "map"] as const).map(tab => (
+            <button key={tab} onClick={() => setActiveTab(tab)}
+              className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-1.5 transition-all ${activeTab === tab ? "text-rose-500 border-b-2 border-rose-400 bg-rose-50" : "text-slate-400 hover:text-rose-400"}`}>
+              <span className="material-symbols-outlined text-base">{tab === "list" ? "format_list_bulleted" : "map"}</span>
+              {tab === "list" ? `명소 (${filteredSpots.length})` : "지도"}
+            </button>
+          ))}
+        </div>
+
+        {/* PWA 설치 유도 배너 */}
+        {isMounted && showInstallBtn && !isDismissed && (
+          <div className="mx-4 my-2.5 p-3.5 bg-gradient-to-r from-rose-400 via-pink-500 to-pink-500 rounded-2xl text-white flex items-center justify-between shadow-lg border border-pink-200/30 animate-fade-up shrink-0">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl animate-bounce">🌸</span>
+              <div className="min-w-0">
+                <p className="text-xs font-black tracking-tight text-white leading-tight">홈 화면에 '꽃맵' 추가하기</p>
+                <p className="text-[10px] text-pink-100 font-bold mt-0.5 leading-tight truncate">매번 검색 없이 앱처럼 바로 꽃구경 가세요!</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={handleInstallApp}
+                className="bg-white hover:bg-pink-50 text-rose-500 font-black text-[11px] px-3.5 py-1.5 rounded-full shadow-sm active:scale-95 transition-all cursor-pointer"
+              >
+                앱 설치
+              </button>
+              <button
+                onClick={handleDismissInstall}
+                className="text-pink-100 hover:text-white p-1 text-sm font-bold transition-colors cursor-pointer"
+                title="닫기"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* ====== 메인 컨텐츠 영역 ====== */}
       <div className="flex-1 flex overflow-hidden relative">
-        {/* ====== 데스크탑 ====== */}
-        <div className="hidden md:flex w-full h-full">
-          {/* 왼쪽 사이드 패널 */}
-          <div className="w-[400px] shrink-0 flex flex-col h-full bg-white" style={{borderRight:"2px solid #FCE7F3", boxShadow:"4px 0 20px rgba(244,114,182,0.08)"}}>
-
+        {/* ====== 데스크탑 왼쪽 사이드 패널 ====== */}
+        <div className="hidden md:flex w-[400px] shrink-0 flex-col h-full bg-white" style={{borderRight:"2px solid #FCE7F3", boxShadow:"4px 0 20px rgba(244,114,182,0.08)"}}>
           {/* 패널 헤더 */}
           <div className="px-5 py-4 shrink-0" style={{background:"linear-gradient(135deg, #FFF0F7, #FDF2F8)", borderBottom:"1.5px solid #FBCFE8"}}>
             <div className="flex items-center gap-2 mb-4">
@@ -336,16 +487,24 @@ export default function FlowerMapClient() {
                 type="text"
                 placeholder="명소 이름, 지역 검색..."
                 value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="w-full bg-white border-2 border-pink-100 rounded-2xl pl-10 pr-4 py-2.5 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:border-rose-300 transition-colors font-medium shadow-sm"
+                onChange={e => {
+                  setSearchQuery(e.target.value);
+                  if (e.target.value.trim() !== "") { setSelectedRegion("all"); setSelectedFlowerId("all"); }
+                }}
+                className="w-full bg-white border-2 border-pink-100 rounded-2xl pl-10 pr-10 py-2.5 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:border-rose-300 transition-colors font-medium shadow-sm"
               />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-rose-500 transition-colors p-1 flex items-center justify-center rounded-full cursor-pointer">
+                  <span className="material-symbols-outlined text-base">close</span>
+                </button>
+              )}
             </div>
 
             {/* 지역 필터 */}
             <div className="flex gap-1.5 flex-wrap">
-              <button onClick={() => setSelectedRegion("all")} className={`px-3 py-1 rounded-full text-xs font-black transition-all ${selectedRegion === "all" ? "bg-rose-500 text-white shadow-md" : "bg-white text-slate-800 border-1.5 border-slate-300 hover:border-rose-300 hover:text-rose-600 font-bold"}`}>전국</button>
+              <button onClick={() => { setSelectedRegion("all"); setSearchQuery(""); }} className={`px-3 py-1 rounded-full text-xs font-black transition-all ${selectedRegion === "all" ? "bg-rose-500 text-white shadow-md" : "bg-white text-slate-800 border-1.5 border-slate-300 hover:border-rose-300 hover:text-rose-600 font-bold"}`}>전국</button>
               {REGIONS.map(r => (
-                <button key={r} onClick={() => setSelectedRegion(r)} className={`px-2.5 py-1 rounded-full text-xs font-black transition-all ${selectedRegion === r ? "bg-rose-500 text-white shadow-md" : "bg-white text-slate-800 border-1.5 border-slate-300 hover:border-rose-300 hover:text-rose-600 font-bold"}`}>{r}</button>
+                <button key={r} onClick={() => { setSelectedRegion(r); setSearchQuery(""); }} className={`px-2.5 py-1 rounded-full text-xs font-black transition-all ${selectedRegion === r ? "bg-rose-500 text-white shadow-md" : "bg-white text-slate-800 border-1.5 border-slate-300 hover:border-rose-300 hover:text-rose-600 font-bold"}`}>{r}</button>
               ))}
             </div>
           </div>
@@ -354,9 +513,9 @@ export default function FlowerMapClient() {
           <div className="px-4 py-3 shrink-0 bg-white" style={{borderBottom:"1.5px solid #FCE7F3"}}>
             <p className="text-xs text-slate-700 font-black uppercase tracking-wider mb-2">🌸 꽃 종류 필터</p>
             <div className="flex gap-1.5 flex-wrap">
-              <button onClick={() => setSelectedFlowerId("all")} className={`px-3 py-1 rounded-full text-xs font-black transition-all ${selectedFlowerId === "all" ? "bg-rose-100 text-rose-700 border-1.5 border-rose-300" : "bg-slate-100 text-slate-800 border-1.5 border-slate-300 hover:bg-rose-50 hover:text-rose-600 font-bold"}`}>전체</button>
+              <button onClick={() => { setSelectedFlowerId("all"); setSearchQuery(""); }} className={`px-3 py-1 rounded-full text-xs font-black transition-all ${selectedFlowerId === "all" ? "bg-rose-100 text-rose-700 border-1.5 border-rose-300" : "bg-slate-100 text-slate-800 border-1.5 border-slate-300 hover:bg-rose-50 hover:text-rose-600 font-bold"}`}>전체</button>
               {FLOWERS.map(f => (
-                <button key={f.id} onClick={() => setSelectedFlowerId(f.id)} className={`px-2.5 py-1 rounded-full text-xs font-black transition-all ${selectedFlowerId === f.id ? "bg-rose-100 text-rose-700 border-1.5 border-rose-300 shadow-xs" : "bg-slate-50 text-slate-800 border-1.5 border-slate-300 hover:bg-rose-50 hover:text-rose-600 font-bold"}`}>
+                <button key={f.id} onClick={() => { setSelectedFlowerId(f.id); setSearchQuery(""); }} className={`px-2.5 py-1 rounded-full text-xs font-black transition-all ${selectedFlowerId === f.id ? "bg-rose-100 text-rose-700 border-1.5 border-rose-300 shadow-xs" : "bg-slate-50 text-slate-800 border-1.5 border-slate-300 hover:bg-rose-50 hover:text-rose-600 font-bold"}`}>
                   {f.emoji} {f.name}
                 </button>
               ))}
@@ -529,94 +688,9 @@ export default function FlowerMapClient() {
           </div>
         </div>
 
-        {/* 지도 영역 */}
-        <div className="flex-1 relative h-full">
-          <div ref={mapContainerRef} className="w-full h-full" />
-
-          {/* 지도 컨트롤 이모티콘 버튼 오버레이 (확대, 축소, 내위치, 전체보기) */}
-          <div className="absolute top-5 right-5 z-20 flex flex-col gap-2 shadow-xl rounded-2xl bg-white/95 backdrop-blur-md p-1.5 border border-pink-200">
-            <button onClick={handleZoomIn} title="지도 확대" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">➕</button>
-            <button onClick={handleZoomOut} title="지도 축소" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">➖</button>
-            <div className="h-px bg-pink-100 my-0.5" />
-            <button onClick={handleMyLocation} title="내 위치로 이동" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">🎯</button>
-            <button onClick={fitAllBounds} title="전국 전체 명소 보기" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">🗺️</button>
-          </div>
-
-          {!mapLoaded && !mapLoadError && (
-            <div className="absolute inset-0 flex items-center justify-center bg-rose-50">
-              <div className="text-center">
-                <div className="text-6xl mb-4 animate-bounce">🌸</div>
-                <div className="w-8 h-8 border-4 border-rose-300 border-t-rose-500 rounded-full animate-spin mx-auto mb-3" />
-                <p className="text-rose-500 font-bold">봄꽃 지도를 불러오는 중...</p>
-              </div>
-            </div>
-          )}
-          {mapLoadError && (
-            <div className="absolute inset-0 flex items-center justify-center bg-rose-50">
-              <div className="text-center spring-card p-8 max-w-sm">
-                <div className="text-4xl mb-3">⚠️</div>
-                <p className="font-black text-rose-600 mb-2">지도 로드 실패</p>
-                <p className="text-sm text-slate-500">카카오맵 API 키 또는 도메인 설정을 확인해주세요.</p>
-              </div>
-            </div>
-          )}
-
-          {/* 하단 광고 오버레이 */}
-          <div className="absolute bottom-4 right-4 w-[320px] z-10">
-            <div className="bg-white/95 backdrop-blur-sm rounded-2xl border border-rose-100 shadow-lg p-2">
-              <AdBanner dataAdSlot="flower-map-overlay" dataAdFormat="auto" style={{ minHeight: 90 }} />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ====== 모바일 ====== */}
-      <div className="flex md:hidden map-page-root flex-col">
-        {/* 모바일 헤더 */}
-        <div className="shrink-0 px-4 pt-safe-top pt-3 pb-3 bg-white" style={{borderBottom:"2px solid #FCE7F3"}}>
-          <div className="flex items-center gap-2 mb-3">
-            <Link href="/" className="flex items-center gap-1.5">
-              <span className="text-lg">🌸</span>
-              <span className="font-black text-rose-500">꽃맵</span>
-            </Link>
-            <span className="ml-auto text-[10px] font-bold text-rose-400 bg-rose-50 border border-rose-100 px-2 py-0.5 rounded-full">2026 봄</span>
-            <button onClick={() => setShowFilters(!showFilters)} className="text-slate-400 ml-1 p-1 rounded-full hover:bg-rose-50 transition-colors">
-              <span className="material-symbols-outlined text-lg">{showFilters ? "expand_less" : "tune"}</span>
-            </button>
-          </div>
-
-          {showFilters && (
-            <div className="space-y-2">
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-pink-300 text-sm material-symbols-outlined">search</span>
-                <input type="text" placeholder="명소 검색..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
-                  className="w-full bg-rose-50 border border-rose-100 rounded-xl pl-8 pr-3 py-2 text-sm text-slate-700 placeholder:text-slate-300 focus:outline-none focus:border-rose-300 transition-colors" />
-              </div>
-              <div className="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-                <button onClick={() => setSelectedFlowerId("all")} className={`shrink-0 px-3 py-1 rounded-full text-xs font-bold transition-all ${selectedFlowerId === "all" ? "bg-rose-500 text-white shadow-sm" : "bg-white text-slate-500 border border-slate-200"}`}>전체</button>
-                {FLOWERS.map(f => (
-                  <button key={f.id} onClick={() => setSelectedFlowerId(f.id)} className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-bold transition-all ${selectedFlowerId === f.id ? "bg-rose-500 text-white shadow-sm" : "bg-white text-slate-500 border border-slate-200"}`}>
-                    {f.emoji} {f.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* 탭 */}
-        <div className="flex shrink-0 bg-white" style={{borderBottom:"2px solid #FCE7F3"}}>
-          {(["list", "map"] as const).map(tab => (
-            <button key={tab} onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-3 text-sm font-bold flex items-center justify-center gap-1.5 transition-all ${activeTab === tab ? "text-rose-500 border-b-2 border-rose-400 bg-rose-50" : "text-slate-400 hover:text-rose-400"}`}>
-              <span className="material-symbols-outlined text-base">{tab === "list" ? "format_list_bulleted" : "map"}</span>
-              {tab === "list" ? `명소 (${filteredSpots.length})` : "지도"}
-            </button>
-          ))}
-        </div>
-
-        {/* 목록 탭 */}
-        {activeTab === "list" && (
+        {/* ====== 모바일 목록 영역 ====== */}
+        {/* 모바일이면서 activeTab === "list" 일 때 지도를 덮도록 absolute로 배치 */}
+        <div className={`absolute inset-0 z-10 md:hidden flex-col bg-slate-50 overflow-hidden ${activeTab === "list" ? "flex" : "hidden"}`}>
           <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pt-3 pb-48 space-y-2 bg-slate-50">
             {/* ====== 모바일 목록 최상단 고정 상세 카드 ====== */}
             {selectedSpot && (
@@ -723,37 +797,63 @@ export default function FlowerMapClient() {
             {/* 하단 스크롤용 여유 빈 공간 */}
             <div className="h-36 shrink-0" />
           </div>
-        )}
+        </div>
 
-        {/* 지도 탭 */}
-        {activeTab === "map" && (
-          <div className="flex-1 relative overflow-hidden">
-            <div ref={mapContainerRef} className="w-full h-full" />
-            
-            {/* 모바일 지도 조작 컨트롤 */}
-            <div className="absolute top-4 right-4 z-20 flex flex-col gap-1.5 shadow-lg rounded-2xl bg-white/95 backdrop-blur-md p-1 border border-pink-200">
-              <button onClick={handleZoomIn} title="지도 확대" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">➕</button>
-              <button onClick={handleZoomOut} title="지도 축소" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">➖</button>
-              <div className="h-px bg-pink-100 my-0.5" />
-              <button onClick={handleMyLocation} title="내 위치" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">🎯</button>
-              <button onClick={fitAllBounds} title="전체보기" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">🗺️</button>
-            </div>
+        {/* ====== 공통 지도 영역 ====== */}
+        {/* 지도 컨테이너가 0x0으로 초기화되는 버그 방지를 위해 항상 flex로 렌더링 (모바일 목록이 absolute로 위를 덮음) */}
+        <div className="flex-1 relative h-full flex flex-col">
+          <div ref={mapContainerRef} className="w-full h-full" />
 
-            {!mapLoaded && !mapLoadError && (
-              <div className="absolute inset-0 flex items-center justify-center bg-rose-50">
-                <div className="text-center">
-                  <div className="text-4xl mb-3 animate-bounce">🌸</div>
-                  <p className="text-rose-500 text-sm font-bold">지도 로딩 중...</p>
-                </div>
+          {/* 데스크탑 지도 조작 컨트롤 */}
+          <div className="hidden md:flex absolute top-5 right-5 z-20 flex-col gap-2 shadow-xl rounded-2xl bg-white/95 backdrop-blur-md p-1.5 border border-pink-200">
+            <button onClick={handleZoomIn} title="지도 확대" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">➕</button>
+            <button onClick={handleZoomOut} title="지도 축소" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">➖</button>
+            <div className="h-px bg-pink-100 my-0.5" />
+            <button onClick={handleMyLocation} title="내 위치로 이동" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">🎯</button>
+            <button onClick={fitAllBounds} title="전국 전체 명소 보기" className="w-11 h-11 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 hover:text-rose-500 font-bold text-xl transition-all shadow-sm active:scale-95">🗺️</button>
+          </div>
+
+          {/* 모바일 지도 조작 컨트롤 (지도 탭일 때만 표시) */}
+          <div className={`md:hidden absolute top-4 right-4 z-20 flex-col gap-1.5 shadow-lg rounded-2xl bg-white/95 backdrop-blur-md p-1 border border-pink-200 ${activeTab === "map" ? "flex" : "hidden"}`}>
+            <button onClick={handleZoomIn} title="지도 확대" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">➕</button>
+            <button onClick={handleZoomOut} title="지도 축소" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">➖</button>
+            <div className="h-px bg-pink-100 my-0.5" />
+            <button onClick={handleMyLocation} title="내 위치" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">🎯</button>
+            <button onClick={fitAllBounds} title="전체보기" className="w-10 h-10 flex items-center justify-center rounded-xl bg-white hover:bg-pink-50 text-slate-700 font-bold text-lg shadow-sm">🗺️</button>
+          </div>
+
+          {!mapLoaded && !mapLoadError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-rose-50 z-20">
+              <div className="text-center">
+                <div className="text-6xl mb-4 animate-bounce">🌸</div>
+                <div className="w-8 h-8 border-4 border-rose-300 border-t-rose-500 rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-rose-500 font-bold">봄꽃 지도를 불러오는 중...</p>
               </div>
-            )}
-            <div className="absolute bottom-0 left-0 right-0 z-10 bg-white/95 border-t border-rose-100">
-              <AdBanner dataAdSlot="flower-map-mobile-map-bottom" dataAdFormat="auto" style={{ minHeight: 60 }} />
+            </div>
+          )}
+          {mapLoadError && (
+            <div className="absolute inset-0 flex items-center justify-center bg-rose-50 z-20">
+              <div className="text-center spring-card p-8 max-w-sm">
+                <div className="text-4xl mb-3">⚠️</div>
+                <p className="font-black text-rose-600 mb-2">지도 로드 실패</p>
+                <p className="text-sm text-slate-500">카카오맵 API 키 또는 도메인 설정을 확인해주세요.</p>
+              </div>
+            </div>
+          )}
+
+          {/* 하단 광고 오버레이 (데스크탑) */}
+          <div className="hidden md:block absolute bottom-4 right-4 w-[320px] z-10">
+            <div className="bg-white/95 backdrop-blur-sm rounded-2xl border border-rose-100 shadow-lg p-2">
+              <AdBanner dataAdSlot="flower-map-overlay" dataAdFormat="auto" style={{ minHeight: 90 }} />
             </div>
           </div>
-        )}
+
+          {/* 하단 광고 오버레이 (모바일) */}
+          <div className="block md:hidden absolute bottom-0 left-0 right-0 z-10 bg-white/95 border-t border-rose-100">
+            <AdBanner dataAdSlot="flower-map-mobile-map-bottom" dataAdFormat="auto" style={{ minHeight: 60 }} />
+          </div>
+        </div>
       </div>
     </div>
-  </div>
   );
 }
